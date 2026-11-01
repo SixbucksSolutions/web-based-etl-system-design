@@ -8,7 +8,10 @@ A practical guide to turning external API data into a service people pay a month
 - [2. Observability/Monitoring/Alerting](#2-observabilitymonitoringalerting)
 - [3. System Components](#3-system-components)
   - [3.1 Data Ingest](#31-data-ingest)
-    - [3.1.1 Monitoring/Alerting](#311-monitoringalerting)
+    - [3.1.1 Resilient Reader Fleet](#311-resilient-reader-fleet)
+    - [3.1.2 Resilient Message Queue](#312-resilient-message-queue)
+    - [3.1.3 Resilient DB Writer](#313-resilient-db-writer)
+    - [3.1.4 Monitoring/Alerting](#314-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -58,13 +61,25 @@ Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distribu
 
 ### 3.1 Data Ingest
 
-Fetch updates from the authenticated source API and hand them to the rest of the pipeline.
+Move source updates through readers and a message queue into the database.
 
-#### 3.1.1 Monitoring/Alerting
+#### 3.1.1 Resilient Reader Fleet
+
+Fetch updates from the external API, with coordinated work and recovery when a reader fails.
+
+#### 3.1.2 Resilient Message Queue
+
+Buffer fetched updates and provide a reliable handoff between readers and database writers.
+
+#### 3.1.3 Resilient DB Writer
+
+Consume queued updates, prepare them for storage, and write them safely even when a message is retried.
+
+#### 3.1.4 Monitoring/Alerting
 
 **Watch the source:** request failures, response times, and data freshness based on the provider's publication timestamp and expected schedule. A `200 OK` can still carry stale data; without reliable source metadata, freshness is unknown. A timeout alone doesn't locate the fault; an independent check can help narrow it down.
 
-**Watch your reader:** missed runs, missing heartbeats, stalled progress, and time since the last complete ingest. Fresh source data with stale local data points toward your reader or downstream processing. Run alerting outside the application's host, notify the owner before freshness or coverage becomes unacceptable to subscribers, and test that alerts arrive.
+**Watch your ingest pipeline:** missed reader runs, missing heartbeats, stalled progress, queue backlog and oldest-message age, writer failures, and time since the last complete ingest. Fresh source data with stale local data points toward our readers, queue, or database-writing path. Run alerting outside the application's host, notify the owner before freshness or coverage becomes unacceptable to subscribers, and test that alerts arrive.
 
 ## License
 
