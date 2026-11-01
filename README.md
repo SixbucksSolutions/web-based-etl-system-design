@@ -50,6 +50,8 @@ The dotted box marks our sphere of control; the provider and subscribers are out
 
 Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up.
 
+**Silence can be its own problem.** A broken monitor or notification route can look exactly like a healthy system. Watch for missing monitoring check-ins through an independent watchdog, and periodically test the full path from detecting a controlled failure to confirming the owner receives the alert.
+
 ### 2.1 Monitoring/Alerting for Data Ingest
 
 **Watch the source:** request failures, response times, and data freshness based on the provider's publication timestamp and expected schedule. A `200 OK` can still carry stale data; without reliable source metadata, freshness is unknown. A timeout alone doesn't locate the fault; an independent check can help narrow it down.
