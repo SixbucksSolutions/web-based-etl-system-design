@@ -70,7 +70,7 @@ A prototype may keep credentials in code or plaintext `.env`/deployment configs.
 
 #### 3.1.2 Resilient Reader Fleet
 
-Read each expected source update more than once with readers spread across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Two readers on the same host can fail together; the aim is for a hypervisor or local network-link failure to leave another reader collecting. Budget those redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
+The aim is to design a system that can survive failures without customers ever noticing an interruption in data flow. Read each expected source update more than once, with readers spread across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Healthy readers can keep collecting while a failed host or network link recovers. Budget redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
 
 #### 3.1.3 Resilient Message Queue
 
