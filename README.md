@@ -14,7 +14,9 @@ A practical guide to turning external API data into a service people pay a month
     - [3.1.4 Resilient DB Writer](#314-resilient-db-writer)
     - [3.1.5 Monitoring/Alerting](#315-monitoringalerting)
   - [3.2 Database](#32-database)
-    - [3.2.1 Monitoring/Alerting](#321-monitoringalerting)
+    - [3.2.1 Primary DB and Failover Standby](#321-primary-db-and-failover-standby)
+    - [3.2.2 Read Replicas](#322-read-replicas)
+    - [3.2.3 Monitoring/Alerting](#323-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -94,13 +96,23 @@ The goal is for every queued copy to be processed successfully, even when anothe
 
 ### 3.2 Database
 
-The database supports both ingestion and subscriber queries. Our example uses [DigitalOcean Managed PostgreSQL](https://docs.digitalocean.com/products/databases/postgresql/) with TimescaleDB enabled, a useful foundation for observations organized around assets and time. Managed hosting lets the provider operate the infrastructure and backup facilities while we focus on schema, access permissions, queries, and retention. We still choose the availability configuration and test recovery; DigitalOcean documents this [shared responsibility](https://docs.digitalocean.com/products/databases/postgresql/concepts/responsibility-model/). Check [extension support](https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/) for the selected edition and version.
+The database supports both ingestion and subscriber queries. Our example uses [DigitalOcean Managed PostgreSQL](https://docs.digitalocean.com/products/databases/postgresql/) with TimescaleDB enabled, a useful foundation for observations organized around assets and time. Managed hosting lets the provider operate the infrastructure and backup facilities while we focus on schema, access permissions, queries, and retention. We still choose the availability configuration and test recovery; DigitalOcean documents this [shared responsibility](https://docs.digitalocean.com/products/databases/postgresql/concepts/responsibility-model/). Under its [plan rollout](https://docs.digitalocean.com/release-notes/upcoming/dbaas-plan-changes/), eligible existing Standard clusters retain both standby and read-only nodes; new Standard clusters subject to the restrictions support neither. Plan for Advanced when those features are needed, and verify [TimescaleDB extension compatibility](https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/) before migration.
 
 Define the stable source-observation key and enforce first-committed-copy-wins here, so independent writers share the same storage contract. For [TimescaleDB hypertables](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), unique keys must include every partitioning column, including time; use a source timestamp that stays the same across repeated deliveries of that observation.
 
-#### 3.2.1 Monitoring/Alerting
+#### 3.2.1 Primary DB and Failover Standby
 
-Watch database availability, read/write latency, failed transactions, connection saturation, lock waits, and storage headroom. Where replicas are configured, monitor replication lag and failover health. Track backup success and restore-test results so recovery is demonstrated. Alert before these conditions threaten ingestion freshness or subscriber queries, and use an independent check of database access alongside the provider's own health signals.
+**Start with a single Standard instance — RECOMMENDED.** Let ingestion and subscriber queries share it while measured performance meets their targets, with managed backups and tested restores. When the acceptable recovery window calls for it, plan a [failover standby](https://docs.digitalocean.com/products/databases/postgresql/how-to/add-standby-nodes/) ready to take over after primary failure; availability needs can justify this even at low load. Add one to an eligible existing cluster or plan a migration to a compatible HA offering. DigitalOcean describes eligible Standard deployments as offering [failover in minutes](https://docs.digitalocean.com/products/databases/postgresql/how-to/create/); test how long application reads and writes actually take to recover. A standby supplies failover capacity, while a dedicated read replica supplies query capacity.
+
+#### 3.2.2 Read Replicas
+
+On a plan that supports it, add a [read replica](https://docs.digitalocean.com/products/databases/postgresql/how-to/add-read-only-nodes/) when sustained query latency shows subscriber reads competing with ingestion for CPU or I/O, after checking queries, indexes, and connection pooling. This gives subscriber queries their own capacity. If writes are the bottleneck, optimize them or resize the primary; a replica must still replay those writes. Include replication lag in the subscriber freshness budget, and define how the API behaves when replicas are unavailable or too stale.
+
+#### 3.2.3 Monitoring/Alerting
+
+**Primary and standby:** Combine [DigitalOcean's database metrics](https://docs.digitalocean.com/products/databases/postgresql/how-to/monitor-databases/) with application timings. Watch p95 subscriber-query and write-commit latency, sustained CPU or disk-I/O saturation, memory pressure, connection-pool waits, lock waits, failed transactions, storage headroom, and queue age. Correlate query slowdowns with ingestion activity, and alert on sustained trends approaching latency or freshness limits. Track backup success, restore-test results, standby readiness, and measured application recovery time after failover; use an independent database-access check alongside provider health signals.
+
+**Read replicas:** Once added, watch replication lag, query latency, and resource headroom on each replica. Verify source-data age and coverage through the subscriber API, so fast queries returning old data are visible. Alert before lag consumes the freshness budget or a replica failure overloads the remaining read capacity.
 
 ## License
 
