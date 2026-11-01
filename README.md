@@ -6,7 +6,9 @@ A practical guide to turning external API data into a service people pay a month
 
 - [1. Quick Problem Description](#1-quick-problem-description)
 - [2. Observability/Monitoring/Alerting](#2-observabilitymonitoringalerting)
-  - [2.1 Monitoring/Alerting for Data Ingest](#21-monitoringalerting-for-data-ingest)
+- [3. System Components](#3-system-components)
+  - [3.1 Data Ingest](#31-data-ingest)
+    - [3.1.1 Monitoring/Alerting](#311-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -48,11 +50,17 @@ The dotted box marks our sphere of control; the provider and subscribers are out
 
 ## 2. Observability/Monitoring/Alerting
 
-Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up.
+Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up. Every component in section 3 closes with **Monitoring/Alerting**, covering what to watch and when to act as we design that component.
 
 **Silence can be its own problem.** Send recurring test alerts through production detection, routing, and delivery; record arrival at the destination before filtering them out of routine human notifications. If that heartbeat stops, an independent watchdog must raise its **own alert**, potentially **out of band (OOB)** through a channel that doesn't depend on the primary alerting system. Occasionally test actual owner notifications too.
 
-### 2.1 Monitoring/Alerting for Data Ingest
+## 3. System Components
+
+### 3.1 Data Ingest
+
+Fetch updates from the authenticated source API and hand them to the rest of the pipeline.
+
+#### 3.1.1 Monitoring/Alerting
 
 **Watch the source:** request failures, response times, and data freshness based on the provider's publication timestamp and expected schedule. A `200 OK` can still carry stale data; without reliable source metadata, freshness is unknown. A timeout alone doesn't locate the fault; an independent check can help narrow it down.
 
