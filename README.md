@@ -26,36 +26,38 @@ An authenticated REST API publishes data once per minute. Our service fetches it
 
 ```mermaid
 flowchart TB
-    upstream["Authenticated REST API<br/>Updates once per minute"]
+    upstream["External API<br/>Authenticated REST<br/>1-minute updates"]
     users["Subscribers<br/>Paid monthly access"]
 
     subgraph service["Web service: our sphere of control"]
         direction TB
-        extract["Extract<br/>Fetch data from the external API"]
+        readers["Resilient Reader Fleet"]
         queries["Web queries<br/>Receive subscriber requests"]
 
-        transform["Transform<br/>Validate and prepare the data"]
+        queue["Resilient Message Queue<br/>RabbitMQ quorum queues"]
         api["Service API<br/>Web service entry point"]
 
-        load["Load<br/>Write the prepared data"]
+        writer["Resilient DB Writer"]
         middleware["Middleware<br/>Request processing"]
         db[("Service database")]
+        vault("External Credentials<br/>Vault / Storage")
 
-        extract --> transform
-        transform --> load
-        load --> db
+        readers --> queue
+        queue --> writer
+        writer --> db
+        readers -.->|Fetch credentials| vault
         api --> middleware
         middleware --> db
     end
 
-    upstream --> extract
+    upstream <-->|Poll for updates| readers
     users --> queries
     queries --> api
 
     style service fill:transparent,stroke:#64748b,stroke-width:2px,stroke-dasharray:2 5,stroke-linecap:round
 ```
 
-The dotted box marks our sphere of control; the provider and subscribers are outside it. Arrows show the data and request paths. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
+The dotted box marks our sphere of control; the provider and subscribers are outside it. The reader fleet fetches credentials from the vault through the dotted side connection. Its bidirectional source-API link shows reader-initiated polling and responses; updates flow through the queue and DB writer into storage. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
 ## 2. Observability/Monitoring/Alerting
 
@@ -75,7 +77,7 @@ A prototype may keep credentials in code or plaintext `.env`/deployment configs.
 
 #### 3.1.2 Resilient Reader Fleet
 
-The aim is to design a system that can survive failures without customers ever noticing an interruption in data flow. Each reader independently fetches and publishes its copy of the expected source update to the queue. Spread readers across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Healthy readers can keep collecting while a failed host or network link recovers. Budget redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
+The aim is to design a system that can survive failures without customers ever noticing an interruption in data flow. Each reader independently polls the source API and publishes its copy of each fetched update to the queue. Spread readers across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Healthy readers can keep collecting while a failed host or network link recovers. Budget redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
 
 #### 3.1.3 Resilient Message Queue
 
