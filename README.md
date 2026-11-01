@@ -77,9 +77,11 @@ Consume queued updates, prepare them for storage, and write them safely even whe
 
 #### 3.1.4 Monitoring/Alerting
 
-**Watch the source:** request failures, response times, and data freshness based on the provider's publication timestamp and expected schedule. A `200 OK` can still carry stale data; without reliable source metadata, freshness is unknown. A timeout alone doesn't locate the fault; an independent check can help narrow it down.
+**Reader fleet:** Watch missed polls, missing heartbeats, request failures, response times, and source-data age against the provider's expected schedule. A `200 OK` can carry stale data; without reliable source metadata, freshness is unknown. Compare upstream responses with reader progress to separate source trouble from our own failures. A timeout alone doesn't locate the fault; an independent check can help.
 
-**Watch your ingest pipeline:** missed reader runs, missing heartbeats, stalled progress, queue backlog and oldest-message age, writer failures, and time since the last complete ingest. Fresh source data with stale local data points toward our readers, queue, or database-writing path. Run alerting outside the application's host, notify the owner before freshness or coverage becomes unacceptable to subscribers, and test that alerts arrive.
+**Message queue:** Watch availability, publish/consume errors, backlog size, and the age of the oldest waiting message. A growing backlog can mean writers are blocked or too slow, even when the queue is healthy. Alert before queue delays consume the subscribers' freshness budget.
+
+**DB writer:** Watch failed or slow writes, repeated retries, and time since the last successful database update. Fresh queued data with stalled writes points toward the writer or database. Check that fresh, complete data actually reaches subscribers; a successful write alone doesn't prove that. Run monitoring outside the application's host, notify the owner before freshness or coverage becomes unacceptable, and test that alerts arrive.
 
 ## License
 
