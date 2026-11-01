@@ -74,7 +74,7 @@ The aim is to design a system that can survive failures without customers ever n
 
 #### 3.1.3 Resilient Message Queue
 
-Buffer fetched updates and provide a reliable handoff between readers and database writers.
+Reliable message queuing is a well-solved problem and a great use of managed services. A managed queue buffers fetched updates so readers and database writers can work independently, while the provider operates the messaging infrastructure. [Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html) is a work-queue example; DigitalOcean offers [Managed Kafka](https://docs.digitalocean.com/products/databases/kafka/) for event streaming, with a different consumption model. Match the service's delivery, retry, and retention behavior to the pipeline, and keep database writes safe to repeat.
 
 #### 3.1.4 Resilient DB Writer
 
