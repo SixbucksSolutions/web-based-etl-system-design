@@ -70,7 +70,7 @@ A prototype may keep credentials in code or plaintext `.env`/deployment configs.
 
 #### 3.1.2 Resilient Reader Fleet
 
-The aim is to design a system that can survive failures without customers ever noticing an interruption in data flow. Read each expected source update more than once, with readers spread across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Healthy readers can keep collecting while a failed host or network link recovers. Budget redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
+The aim is to design a system that can survive failures without customers ever noticing an interruption in data flow. Each reader independently fetches and publishes its copy of the expected source update to the queue. Spread readers across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Healthy readers can keep collecting while a failed host or network link recovers. Budget redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
 
 #### 3.1.3 Resilient Message Queue
 
@@ -78,7 +78,7 @@ Buffering updates between readers and database writers is a well-solved problem.
 
 #### 3.1.4 Resilient DB Writer
 
-Assume another writer may already have stored any observation you receive. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging RabbitMQ. Other database errors still need normal handling. For [TimescaleDB](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), the unique key must include all hypertable partitioning columns, including time.
+The goal is for every queued copy to be processed successfully, even when another writer has already stored the same observation. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging RabbitMQ. Other database errors still need normal handling. For [TimescaleDB](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), the unique key must include all hypertable partitioning columns, including time.
 
 #### 3.1.5 Monitoring/Alerting
 
