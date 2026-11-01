@@ -74,7 +74,7 @@ The aim is to design a system that can survive failures without customers ever n
 
 #### 3.1.3 Resilient Message Queue
 
-Reliable message queuing is a well-solved problem and a great use of managed services. A managed queue buffers fetched updates so readers and database writers can work independently, while the provider operates the messaging infrastructure. [Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html) is a work-queue example; DigitalOcean offers [Managed Kafka](https://docs.digitalocean.com/products/databases/kafka/) for event streaming, with a different consumption model. Match the service's delivery, retry, and retention behavior to the pipeline, and keep database writes safe to repeat.
+Buffering updates between readers and database writers is a well-solved problem. **[RabbitMQ](https://www.rabbitmq.com/docs/download) with [quorum queues](https://www.rabbitmq.com/docs/quorum-queues) — RECOMMENDED** offers a straightforward Docker start and well-documented [multi-host clustering](https://www.rabbitmq.com/docs/clustering). A work queue is the simpler fit for this handoff; consider an event-streaming platform such as [Kafka](https://kafka.apache.org/intro/) when retained event history and independent replay become requirements. For production resilience, run three nodes on separate hosts, ideally across three independent failure domains, with three replicas per queue and persistent storage per node. Use publisher confirms, consumer acknowledgements, and client reconnection; test node failover and keep database writes safe to repeat.
 
 #### 3.1.4 Resilient DB Writer
 
@@ -86,7 +86,7 @@ Consume queued updates, prepare them for storage, and write them safely even whe
 
 **Reader fleet:** Watch missed polls, missing heartbeats, request failures, response times, and source-data age against the provider's expected schedule. A `200 OK` can carry stale data; without reliable source metadata, freshness is unknown. Compare upstream responses with reader progress to separate source trouble from our own failures. A timeout alone doesn't locate the fault; an independent check can help.
 
-**Message queue:** Watch availability, publish/consume errors, backlog size, and the age of the oldest waiting message. A growing backlog can mean writers are blocked or too slow, even when the queue is healthy. Alert before queue delays consume the subscribers' freshness budget.
+**Message queue:** Watch availability, node and replica health, publish/consume errors, backlog size, and the age of the oldest waiting message. Alert when a node or replica failure reduces resilience, even if messages are still flowing. A growing backlog can mean writers are blocked or too slow, even when the queue is healthy. Alert before queue delays consume the subscribers' freshness budget.
 
 **DB writer:** Watch failed or slow writes, repeated retries, and time since the last successful database update. Fresh queued data with stalled writes points toward the writer or database. Check that fresh, complete data actually reaches subscribers; a successful write alone doesn't prove that. Run monitoring outside the application's host, notify the owner before freshness or coverage becomes unacceptable, and test that alerts arrive.
 
