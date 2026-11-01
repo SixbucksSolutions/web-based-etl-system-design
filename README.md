@@ -1,28 +1,28 @@
 # Web-Based ETL System Design
 
-A practical guide to designing a web service that brings data in from an external API, stores it, and makes it useful to people through its own API.
+A practical guide for anyone building a web service that consumes data from an external API, adds value to it, and offers access through a paid monthly subscription.
 
-This starts with Justin's first web service and a simple question: how can we do what we're doing better? As we work through the system, we'll add design notes at each layer, explain the problems they solve, and keep the examples useful to anyone building something similar.
+The goal is to turn source data into useful information or tools that people will pay to keep using. As we work through the system, we'll add design notes at each layer and explain the problems they solve, with practical examples for developers building their first service.
 
 ## The starting picture
 
-Two paths meet at one database. On the left, an ETL pipeline brings data into the system. On the right, users query Justin's web service.
+Two paths meet at one database. On the left, an ETL pipeline brings data into the system. On the right, subscribers query the web service to access its added value.
 
 ```mermaid
 flowchart TB
-    upstream["External API<br/>Justin consumes this"]
-    users["Users of Justin's web service"]
+    upstream["External API<br/>Source data"]
+    users["Subscribers<br/>Paid monthly access"]
 
     extract["Extract<br/>Fetch data from the external API"]
-    queries["Web queries<br/>Requests from users"]
+    queries["Web queries<br/>Requests from subscribers"]
 
     transform["Transform<br/>Validate and prepare the data"]
-    api["Justin's API<br/>Web service entry point"]
+    api["Service API<br/>Web service entry point"]
 
     load["Load<br/>Write the prepared data"]
     middleware["Middleware<br/>Request processing"]
 
-    db[("Justin's database")]
+    db[("Service database")]
 
     upstream --> extract
     extract --> transform
@@ -37,7 +37,7 @@ flowchart TB
 
 **Left: bringing data in.** ETL means *Extract, Transform, Load*: fetch data from a source, prepare it for our needs, and write it to our database.
 
-**Right: serving users.** Users send web requests to Justin's API. The service processes those requests and queries the stored data. Results travel back to the users; the diagram shows the downward request path to keep the starting picture simple.
+**Right: serving subscribers.** Subscribers send web requests to the service API. The service processes those requests and queries the stored data to deliver useful results. Results travel back to the subscribers; the diagram shows the downward request path to keep the starting picture simple.
 
 The API and middleware boxes show responsibilities. In application code, middleware commonly runs before an endpoint handler and may also process the response on its way out.
 
@@ -53,7 +53,8 @@ This is a starting sketch. The framework, database engine, hosting, ingestion sc
 ## What we'll fill in next
 
 - What data does the external API provide, and what limits does it impose?
-- What does Justin do to that data before storing it?
+- What does the service do to that data before storing it?
+- What value does the service add that makes a monthly subscription worthwhile?
 - What questions do users ask, and who is allowed to see which data?
 - What happens when an import or a user request fails?
 
