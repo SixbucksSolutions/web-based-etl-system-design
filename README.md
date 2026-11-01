@@ -24,9 +24,9 @@ A practical guide to turning external API data into a service people pay a month
 
 An authenticated REST API publishes data once per minute. Our service fetches it, adds value, and makes it available to paying subscribers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; subscriber requests use our API to access the results.
 
-![System overview: readers poll an external API and look up credentials in a vault to their left; updates flow vertically through a message queue and DB writer into PostgreSQL with TimescaleDB. Subscribers query the same database through the service API and middleware.](docs/system-overview.svg)
+![System overview: readers poll an external API and look up credentials in a vault to their left; updates flow down through a message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides.](docs/system-overview.svg)
 
-The dotted box marks our sphere of control; the provider and subscribers are outside it. The vault sits to the reader fleet's left, with a dotted, double-ended connection for credential requests and responses. Readers poll the source API over the other bidirectional link. Updates flow straight down through the queue and DB writer into storage. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
+The dotted box marks our sphere of control; the provider and subscribers are outside it. The vault sits to the reader fleet's left, with a solid, double-ended connection for credential requests and responses. Readers poll the source API over the other bidirectional link. Updates flow down through the queue and DB writer, and both columns connect to the shared database through right-angle side connections. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
 ## 2. Observability/Monitoring/Alerting
 

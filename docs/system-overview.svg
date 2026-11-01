@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="950" viewBox="0 0 1024 950" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">Readers poll an external authenticated REST API. A credentials vault sits directly to the left of the reader fleet, connected by a dotted request and response arrow. The readers, RabbitMQ message queue, database writer, and database share a straight vertical data path. Subscribers use the service API and middleware to query the same database. A dotted boundary encloses the service components.</desc>
+  <desc id="diagram-description">Readers poll an external authenticated REST API. A credentials vault sits directly to the left of the reader fleet, connected by a solid, double-ended arrow. Updates flow vertically through the readers, RabbitMQ message queue, and database writer. Subscribers use the service API and middleware. The database is centered between the two columns, with right-angle connectors entering its left and right centers. A dotted boundary encloses the service components.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -14,11 +14,10 @@
     .small { font-size: 16px; }
     .flow { fill: none; stroke: #414855; stroke-width: 2; marker-end: url(#arrow); }
     .both { marker-start: url(#arrow); }
-    .lookup { stroke-dasharray: 3 5; }
   </style>
   <rect width="1024" height="950" fill="#ffffff"/>
 
-  <!-- The ingestion path shares x=440, including the source and database. -->
+  <!-- The source, readers, queue, and writer share x=440. -->
   <g aria-label="External API">
     <rect class="node" x="320" y="40" width="240" height="100"/>
     <text class="title" x="440" y="73">External API</text>
@@ -50,9 +49,7 @@
     <text class="title" x="440" y="335">Resilient</text>
     <text class="title" x="440" y="365">Reader Fleet</text>
   </g>
-  <path class="flow both lookup" d="M 320 345 H 235"/>
-  <text x="277" y="316" style="font-size: 13px;">Read request</text>
-  <text x="277" y="334" style="font-size: 13px;">Response</text>
+  <path class="flow both" d="M 320 345 H 235"/>
 
   <g aria-label="Web queries">
     <rect class="node" x="745" y="300" width="240" height="90"/>
@@ -87,12 +84,13 @@
     <text class="detail" x="865" y="675">Request processing</text>
   </g>
 
-  <path class="flow" d="M 440 700 V 767"/>
-  <path class="flow" d="M 865 700 V 735 H 535 V 774"/>
+  <!-- Database x=652.5 is midway between the two column centers, 440 and 865. -->
+  <path class="flow" d="M 440 700 V 825 H 532.5"/>
+  <path class="flow" d="M 865 700 V 825 H 772.5"/>
   <g aria-label="Service database, PostgreSQL and TimescaleDB">
-    <path class="node" d="M 320 785 V 865 C 320 889 560 889 560 865 V 785 Z"/>
-    <ellipse class="node" cx="440" cy="785" rx="120" ry="18"/>
-    <text class="title" x="440" y="828">Service database</text>
-    <text class="small" x="440" y="857">PostgreSQL + TimescaleDB</text>
+    <path class="node" d="M 532.5 785 V 865 C 532.5 889 772.5 889 772.5 865 V 785 Z"/>
+    <ellipse class="node" cx="652.5" cy="785" rx="120" ry="18"/>
+    <text class="title" x="652.5" y="828">Service database</text>
+    <text class="small" x="652.5" y="857">PostgreSQL + TimescaleDB</text>
   </g>
 </svg>
