@@ -78,7 +78,7 @@ Buffering updates between readers and database writers is a well-solved problem.
 
 #### 3.1.4 Resilient DB Writer
 
-Consume queued updates, prepare them for storage, and write them safely even when a message is retried.
+Assume another writer may already have stored any observation you receive. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging RabbitMQ. Other database errors still need normal handling. For [TimescaleDB](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), the unique key must include all hypertable partitioning columns, including time.
 
 #### 3.1.5 Monitoring/Alerting
 
@@ -88,7 +88,7 @@ Consume queued updates, prepare them for storage, and write them safely even whe
 
 **Message queue:** Watch availability, node and replica health, publish/consume errors, backlog size, and the age of the oldest waiting message. Alert when a node or replica failure reduces resilience, even if messages are still flowing. A growing backlog can mean writers are blocked or too slow, even when the queue is healthy. Alert before queue delays consume the subscribers' freshness budget.
 
-**DB writer:** Watch failed or slow writes, repeated retries, and time since the last successful database update. Fresh queued data with stalled writes points toward the writer or database. Check that fresh, complete data actually reaches subscribers; a successful write alone doesn't prove that. Run monitoring outside the application's host, notify the owner before freshness or coverage becomes unacceptable, and test that alerts arrive.
+**DB writer:** Watch failed or slow writes, repeated retries, and time since the last successful database update. Count expected duplicates separately from failed writes, and keep freshness tied to source observation time. Fresh queued data with stalled writes points toward the writer or database. Check that fresh, complete data actually reaches subscribers; a successful write alone doesn't prove that. Run monitoring outside the application's host, notify the owner before freshness or coverage becomes unacceptable, and test that alerts arrive.
 
 ## License
 
