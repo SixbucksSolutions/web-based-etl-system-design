@@ -66,7 +66,7 @@ Move source updates through readers and a message queue into the database.
 
 #### 3.1.1 External Credentials Vault/Storage
 
-A prototype may start with a hard-coded credential or a manually configured environment variable. For production, use an access-controlled [secrets store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) with limited reader access and a plan for provider-supported rotation and revocation. A stolen API key or bearer token may let someone act as the customer within its permissions. Environment variables can still deliver secrets at runtime; the store manages their access and lifecycle. Keep secret values out of code, images, browser bundles, and logs, and plan for vault outages.
+A prototype may start with a hard-coded credential or an environment variable loaded from a plaintext `.env` file or deployment config. For production, use an access-controlled [secrets store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) with limited reader access and a plan for provider-supported rotation and revocation. A stolen API key or bearer token may let someone act as the customer within its permissions. Environment variables can still deliver secrets at runtime; check where their values are actually stored. Keep secret values out of code, images, browser bundles, and logs, and plan for vault outages.
 
 #### 3.1.2 Resilient Reader Fleet
 
