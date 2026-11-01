@@ -42,17 +42,17 @@ Two paths meet at one database. On the left, an ETL pipeline brings data into th
 flowchart TB
     upstream["Authenticated REST API<br/>Updates once per minute"]
     users["Subscribers<br/>Paid monthly access"]
-    queries["Web queries<br/>Requests from subscribers"]
 
     subgraph service["Web service: our sphere of control"]
         direction TB
         extract["Extract<br/>Fetch data from the external API"]
-        api["Service API<br/>Web service entry point"]
+        queries["Web queries<br/>Receive subscriber requests"]
 
         transform["Transform<br/>Validate and prepare the data"]
-        middleware["Middleware<br/>Request processing"]
+        api["Service API<br/>Web service entry point"]
 
         load["Load<br/>Write the prepared data"]
+        middleware["Middleware<br/>Request processing"]
         db[("Service database")]
 
         extract --> transform
@@ -69,7 +69,7 @@ flowchart TB
     style service fill:transparent,stroke:#64748b,stroke-width:2px,stroke-dasharray:2 5,stroke-linecap:round
 ```
 
-The dotted boundary marks the components we build and operate. The provider and subscribers sit outside it. Components inside the boundary may share a host or span several deployments. We cannot repair the provider's service, but we control how our service detects dependency trouble, responds, and communicates its impact.
+The dotted boundary marks the components we build and operate, including receiving subscriber requests. The provider and subscribers sit outside it. Components inside the boundary may share a host or span several deployments. We cannot repair the provider's service, but we control how our service detects dependency trouble, responds, and communicates its impact.
 
 **Left: bringing data in.** ETL means *Extract, Transform, Load*: fetch data from a source, prepare it for our needs, and write it to our database.
 
