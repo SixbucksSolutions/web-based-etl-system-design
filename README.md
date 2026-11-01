@@ -13,6 +13,8 @@ A practical guide to turning external API data into a service people pay a month
     - [3.1.3 Resilient Message Queue](#313-resilient-message-queue)
     - [3.1.4 Resilient DB Writer](#314-resilient-db-writer)
     - [3.1.5 Monitoring/Alerting](#315-monitoringalerting)
+  - [3.2 Database](#32-database)
+    - [3.2.1 Monitoring/Alerting](#321-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -78,7 +80,7 @@ The aim is for every reader's copy to reach a DB writer, with redundant copies p
 
 #### 3.1.4 Resilient DB Writer
 
-The goal is for every queued copy to be processed successfully, even when another writer has already stored the same observation. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging RabbitMQ. Other database errors still need normal handling. For [TimescaleDB](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), the unique key must include all hypertable partitioning columns, including time.
+The goal is for every queued copy to be processed successfully, even when another writer has already stored the same observation. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging RabbitMQ. Other database errors still need normal handling. The [database section](#32-database) owns the observation key and its constraints.
 
 #### 3.1.5 Monitoring/Alerting
 
@@ -89,6 +91,16 @@ The goal is for every queued copy to be processed successfully, even when anothe
 **Message queue:** Watch availability, node and replica health, unconfirmed publishes, publish-confirm latency, publish/consume errors, backlog size, and the age of the oldest waiting message. Alert when a node or replica failure reduces resilience, even if messages are still flowing. A growing backlog can mean writers are blocked or too slow, even when the queue is healthy. Alert before queue delays consume the subscribers' freshness budget.
 
 **DB writer:** Watch failed or slow writes, repeated retries, and time since the last successful database update. Count expected duplicates separately from failed writes, and keep freshness tied to source observation time. Fresh queued data with stalled writes points toward the writer or database. Check that fresh, complete data actually reaches subscribers; a successful write alone doesn't prove that. Run monitoring outside the application's host, notify the owner before freshness or coverage becomes unacceptable, and test that alerts arrive.
+
+### 3.2 Database
+
+The database supports both ingestion and subscriber queries. Our example uses [DigitalOcean Managed PostgreSQL](https://docs.digitalocean.com/products/databases/postgresql/) with TimescaleDB enabled, a useful foundation for observations organized around assets and time. Managed hosting lets the provider operate the infrastructure and backup facilities while we focus on schema, access permissions, queries, and retention. We still choose the availability configuration and test recovery; DigitalOcean documents this [shared responsibility](https://docs.digitalocean.com/products/databases/postgresql/concepts/responsibility-model/). Check [extension support](https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/) for the selected edition and version.
+
+Define the stable source-observation key and enforce first-committed-copy-wins here, so independent writers share the same storage contract. For [TimescaleDB hypertables](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), unique keys must include every partitioning column, including time; use a source timestamp that stays the same across repeated deliveries of that observation.
+
+#### 3.2.1 Monitoring/Alerting
+
+Watch database availability, read/write latency, failed transactions, connection saturation, lock waits, and storage headroom. Where replicas are configured, monitor replication lag and failover health. Track backup success and restore-test results so recovery is demonstrated. Alert before these conditions threaten ingestion freshness or subscriber queries, and use an independent check of database access alongside the provider's own health signals.
 
 ## License
 
