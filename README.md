@@ -66,7 +66,7 @@ Move source updates through readers and a message queue into the database.
 
 #### 3.1.1 External Credentials Vault/Storage
 
-A prototype may start with a hard-coded credential or an environment variable loaded from a plaintext `.env` file or deployment config. For production, use an access-controlled [secrets store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) with limited reader access and a plan for provider-supported rotation and revocation. A stolen API key or bearer token may let someone act as the customer within its permissions. Environment variables can still deliver secrets at runtime; check where their values are actually stored. Keep secret values out of code, images, browser bundles, and logs, and plan for vault outages.
+A prototype may start with a hard-coded credential or an environment variable backed by a plaintext `.env` file or deployment config. Move credentials to an access-controlled [secrets store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html), limit reader access, and plan provider-supported rotation and revocation: a stolen key or bearer token may impersonate the customer within its permissions. A hosted, managed service can improve availability and reduce vault maintenance. For readers on Droplets, look at DigitalOcean's [Secrets Manager CLI](https://docs.digitalocean.com/reference/doctl/reference/secrets/) and [API](https://docs.digitalocean.com/reference/api/reference/security/); protect the credentials used to access the store, and check its regional resilience and outage behavior. Environment variables can still deliver secrets at runtime; keep values out of code, images, browser bundles, and logs.
 
 #### 3.1.2 Resilient Reader Fleet
 
