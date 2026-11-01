@@ -50,7 +50,7 @@ The dotted box marks our sphere of control; the provider and subscribers are out
 
 Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up.
 
-**Silence can be its own problem.** A broken monitor or notification route can look exactly like a healthy system. Watch for missing monitoring check-ins through an independent watchdog, and periodically test the full path from detecting a controlled failure to confirming the owner receives the alert.
+**Silence can be its own problem.** Send recurring test alerts through production detection, routing, and delivery; record arrival at the destination before filtering them out of routine human notifications. If that heartbeat stops, an independent watchdog must raise its **own alert**, potentially **out of band (OOB)** through a channel that doesn't depend on the primary alerting system. Occasionally test actual owner notifications too.
 
 ### 2.1 Monitoring/Alerting for Data Ingest
 
