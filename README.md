@@ -65,7 +65,7 @@ Move source updates through readers and a message queue into the database.
 
 #### 3.1.1 Resilient Reader Fleet
 
-Fetch updates from the external API, with coordinated work and recovery when a reader fails.
+Read each expected source update more than once with readers spread across [independent failure domains](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html)—preferably separate availability zones (AZs), or separate regions when regional outages are in scope. Two readers on the same host can fail together; the aim is for a hypervisor or local network-link failure to leave another reader collecting. Budget those redundant calls against the provider's shared rate limits, and handle duplicate or out-of-order updates safely downstream.
 
 #### 3.1.2 Resilient Message Queue
 
