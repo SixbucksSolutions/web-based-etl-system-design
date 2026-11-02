@@ -44,6 +44,8 @@ Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distribu
 
 Metrics from every component reach a shared **Metrics Store**, whether pushed or collected by a scraper. The **Monitoring Platform** queries those measurements for dashboards and alert conditions; **Service Health Management** uses native health checks and monitoring signals to right-size workloads and replace unhealthy instances; the **Service Ops Team Alerting System** groups and routes notifications to the **Service Ops Team**, who use Monitoring to investigate. These are [logical responsibilities](https://prometheus.io/docs/alerting/latest/overview/); one managed service may provide several of them. The diagram connects Alerting to Monitoring, with Monitoring accessing the Metrics Store.
 
+Monitor both **freshness** (age of the newest source-timestamped observation committed to the database) and **coverage** (unacceptable gaps between observations). Evaluate each source/data stream against its expected cadence and active periods, allowing for publication delay and late or out-of-order arrivals. Configure the thresholds separately: one-minute updates do not necessarily imply a strict one-minute freshness limit. New arrivals may clear a stale-data alert while an earlier gap remains unresolved.
+
 **Silence can be its own problem.** Send recurring test alerts through production detection, routing, and delivery; record arrival at the destination before filtering them out of routine human notifications. If that heartbeat stops, an independent watchdog must raise its **own alert**, potentially **out of band (OOB)** through a channel that doesn't depend on the primary alerting system. Occasionally test actual owner notifications too.
 
 ## 3. Logging
