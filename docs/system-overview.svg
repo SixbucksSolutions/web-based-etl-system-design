@@ -27,22 +27,22 @@
 
   <!-- Label's bottom is y=45; translated source boxes start at y=70: 25px padding. -->
   <g aria-label="External Data Sources">
-    <rect x="150" y="15" width="680" height="185" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
-    <text x="490" y="45" dominant-baseline="text-after-edge" style="font-size: 18px; font-weight: 600;">External Data Sources</text>
+    <rect x="190" y="15" width="680" height="185" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <text x="530" y="45" dominant-baseline="text-after-edge" style="font-size: 18px; font-weight: 600;">External Data Sources</text>
   </g>
 
   <g transform="translate(0, 30)">
 
   <!-- Each external source is directly above its reader fleet. -->
   <g aria-label="External Data Source 1">
-    <rect class="node" x="170" y="40" width="240" height="100"/>
-    <text class="title" x="290" y="80">External Data</text>
-    <text class="title" x="290" y="110">Source 1</text>
+    <rect class="node" x="210" y="40" width="240" height="100"/>
+    <text class="title" x="330" y="80">External Data</text>
+    <text class="title" x="330" y="110">Source 1</text>
   </g>
   <g aria-label="External Data Source N">
-    <rect class="node" x="570" y="40" width="240" height="100"/>
-    <text class="title" x="690" y="80">External Data</text>
-    <text class="title" x="690" y="110">Source <tspan font-style="italic">N</tspan></text>
+    <rect class="node" x="610" y="40" width="240" height="100"/>
+    <text class="title" x="730" y="80">External Data</text>
+    <text class="title" x="730" y="110">Source <tspan font-style="italic">N</tspan></text>
   </g>
   <g aria-label="Subscribers">
     <rect class="node" x="985" y="40" width="240" height="100"/>
@@ -64,11 +64,11 @@
     <text class="plane-label" x="45" y="1278" style="text-anchor: start;">Management Plane — shared operational services</text>
   </g>
 
-  <path class="flow both" d="M 290 90 V 310"/>
-  <path class="flow both" d="M 690 90 V 310"/>
+  <path class="flow both" d="M 330 90 V 310"/>
+  <path class="flow both" d="M 730 90 V 310"/>
   <g aria-label="HTTPS Connections: REST polling, WebSocket push, etc." font-style="italic">
-    <text class="detail" x="490" y="180">HTTPS Connections</text>
-    <text class="detail" x="490" y="207">REST polling, WebSocket push, etc.</text>
+    <text class="detail" x="530" y="180">HTTPS Connections</text>
+    <text class="detail" x="530" y="207">REST polling, WebSocket push, etc.</text>
   </g>
   <path class="flow" d="M 1105 90 V 310"/>
 
@@ -76,20 +76,20 @@
   <g transform="translate(0, 30)">
   <!-- Reader fleets and subscriber queries share the same row. -->
   <g aria-label="Datasource 1 Resilient Reader Fleet">
-    <rect class="node" x="170" y="280" width="240" height="100"/>
-    <text class="title" x="290" y="305">Datasource 1</text>
-    <text class="title" x="290" y="329">Resilient</text>
-    <text class="title" x="290" y="353">Reader Fleet</text>
+    <rect class="node" x="210" y="280" width="240" height="100"/>
+    <text class="title" x="330" y="305">Datasource 1</text>
+    <text class="title" x="330" y="329">Resilient</text>
+    <text class="title" x="330" y="353">Reader Fleet</text>
 
-    <text x="290" y="372" style="font-size: 14px;">Extract (E)</text>
+    <text x="330" y="372" style="font-size: 14px;">Extract (E)</text>
   </g>
   <g aria-label="Datasource N Resilient Reader Fleet">
-    <rect class="node" x="570" y="280" width="240" height="100"/>
-    <text class="title" x="690" y="305">Datasource <tspan font-style="italic">N</tspan></text>
-    <text class="title" x="690" y="329">Resilient</text>
-    <text class="title" x="690" y="353">Reader Fleet</text>
+    <rect class="node" x="610" y="280" width="240" height="100"/>
+    <text class="title" x="730" y="305">Datasource <tspan font-style="italic">N</tspan></text>
+    <text class="title" x="730" y="329">Resilient</text>
+    <text class="title" x="730" y="353">Reader Fleet</text>
 
-    <text x="690" y="372" style="font-size: 14px;">Extract (E)</text>
+    <text x="730" y="372" style="font-size: 14px;">Extract (E)</text>
   </g>
 
   <g aria-label="Web queries">
@@ -98,14 +98,14 @@
     <text class="detail" x="1105" y="350">Subscriber requests</text>
   </g>
 
-  <path class="flow" d="M 290 380 V 520 H 370"/>
-  <path class="flow" d="M 690 380 V 520 H 610"/>
+  <path class="flow" d="M 330 380 V 520 H 410"/>
+  <path class="flow" d="M 730 380 V 520 H 650"/>
   <path class="flow" d="M 1105 380 V 470"/>
   <g aria-label="Resilient message queue">
-    <rect class="node" x="370" y="470" width="240" height="100"/>
-    <text class="title" x="490" y="500">Resilient</text>
-    <text class="title" x="490" y="527">Message Queue</text>
-    <text class="small" x="490" y="552">(e.g., SQS, RabbitMQ)</text>
+    <rect class="node" x="410" y="470" width="240" height="100"/>
+    <text class="title" x="530" y="500">Resilient</text>
+    <text class="title" x="530" y="527">Message Queue</text>
+    <text class="small" x="530" y="552">(e.g., SQS, RabbitMQ)</text>
   </g>
   <g aria-label="Service API">
     <rect class="node" x="985" y="470" width="240" height="100"/>
@@ -113,24 +113,24 @@
     <text class="detail" x="1105" y="542">Web service entry point</text>
   </g>
 
-  <path class="flow" d="M 490 570 V 630"/>
+  <path class="flow" d="M 530 570 V 630"/>
   <path class="flow" d="M 1105 570 V 630"/>
   <g aria-label="Resilient database writer">
-    <rect class="node" x="370" y="630" width="240" height="90"/>
-    <text class="title" x="490" y="654">Resilient</text>
-    <text class="title" x="490" y="680">DB Writer</text>
-    <text x="490" y="705" style="font-size: 14px;">Validate / Transform / Load</text>
+    <rect class="node" x="410" y="630" width="240" height="90"/>
+    <text class="title" x="530" y="654">Resilient</text>
+    <text class="title" x="530" y="680">DB Writer</text>
+    <text x="530" y="705" style="font-size: 14px;">Validate / Transform / Load</text>
   </g>
   <!-- Failed processing is isolated; replay returns through the normal queue. -->
-  <path class="flow" d="M 370 675 H 305"/>
-  <text x="337.5" y="695" style="font-size: 12px;">Failed</text>
-  <path class="flow replay" d="M 305 630 L 370 570"/>
-  <text x="290" y="590" style="font-size: 13px;">Controlled replay</text>
+  <path class="flow" d="M 410 675 H 345"/>
+  <text x="377.5" y="695" style="font-size: 12px;">Failed</text>
+  <path class="flow replay" d="M 345 630 L 410 570"/>
+  <text x="330" y="590" style="font-size: 13px;">Controlled replay</text>
   <g aria-label="Failed Ingest Messages / Quarantine, dead-letter queue">
-    <rect class="node" x="65" y="630" width="240" height="90"/>
-    <text x="185" y="655" style="font-size: 18px; font-weight: 600;">Failed Ingest Messages</text>
-    <text x="185" y="681" style="font-size: 18px; font-weight: 600;">Quarantine (DLQ)</text>
-    <text x="185" y="705" style="font-size: 14px;">Inspect / fix / replay</text>
+    <rect class="node" x="105" y="630" width="240" height="90"/>
+    <text x="225" y="655" style="font-size: 18px; font-weight: 600;">Failed Ingest Messages</text>
+    <text x="225" y="681" style="font-size: 18px; font-weight: 600;">Quarantine (DLQ)</text>
+    <text x="225" y="705" style="font-size: 14px;">Inspect / fix / replay</text>
   </g>
   <g aria-label="Middleware">
     <rect class="node" x="985" y="630" width="240" height="90"/>
@@ -138,16 +138,16 @@
     <text class="detail" x="1105" y="695">Request processing</text>
   </g>
 
-  <!-- Database x=797.5 is midway between writer x=490 and middleware x=1105. -->
-  <path class="flow" d="M 610 675 H 722.5"/>
-  <path class="flow" d="M 985 675 H 872.5"/>
+  <!-- Database x=817.5 is midway between writer x=530 and middleware x=1105. -->
+  <path class="flow" d="M 650 675 H 742.5"/>
+  <path class="flow" d="M 985 675 H 892.5"/>
   <g aria-label="Service database, PostgreSQL and TimescaleDB">
-    <path class="node" d="M 722.5 580 V 770 C 722.5 790 872.5 790 872.5 770 V 580 Z"/>
-    <ellipse class="node" cx="797.5" cy="580" rx="75" ry="15"/>
-    <text class="title" x="797.5" y="635">Service</text>
-    <text class="title" x="797.5" y="665">Database</text>
-    <text x="797.5" y="699" style="font-size: 14px;">(PostgreSQL +</text>
-    <text x="797.5" y="720" style="font-size: 14px;">TimescaleDB)</text>
+    <path class="node" d="M 742.5 580 V 770 C 742.5 790 892.5 790 892.5 770 V 580 Z"/>
+    <ellipse class="node" cx="817.5" cy="580" rx="75" ry="15"/>
+    <text class="title" x="817.5" y="635">Service</text>
+    <text class="title" x="817.5" y="665">Database</text>
+    <text x="817.5" y="699" style="font-size: 14px;">(PostgreSQL +</text>
+    <text x="817.5" y="720" style="font-size: 14px;">TimescaleDB)</text>
   </g>
 
   <g transform="translate(255, 290)">
@@ -167,7 +167,7 @@
 
   </g>
 
-  <g transform="translate(-592.5, 290)">
+  <g transform="translate(-552.5, 290)">
   <!-- Short inward arrows symbolize every component using one logical log destination. -->
   <g aria-label="Every component sends logs to the Resilient Logging Subsystem">
     <path class="log-flow" d="M 637.5 610 L 657.5 630"/>
@@ -185,7 +185,7 @@
 
   </g>
 
-  <g transform="translate(440, -220)">
+  <g transform="translate(460, -220)">
   <g aria-label="Metrics from every component reach the shared Metrics Store">
     <path class="metric-flow" d="M 45 1120 L 65 1140"/>
     <path class="metric-flow" d="M 325 1120 L 305 1140"/>
@@ -198,16 +198,16 @@
     <text class="title" x="185" y="1205">Store</text>
   </g>
   </g>
-  <path class="flow both" d="M 625 1010 V 1100"/>
+  <path class="flow both" d="M 645 1010 V 1100"/>
 
   <g transform="translate(0, -40)">
   <!-- Shared observability roles; these may be provided by one managed service. -->
   <g aria-label="Monitoring Platform">
-    <rect class="node" x="505" y="1140" width="240" height="90"/>
-    <text class="title" x="625" y="1177">Monitoring</text>
-    <text class="title" x="625" y="1205">Platform</text>
+    <rect class="node" x="525" y="1140" width="240" height="90"/>
+    <text class="title" x="645" y="1177">Monitoring</text>
+    <text class="title" x="645" y="1205">Platform</text>
   </g>
-  <path class="flow both" d="M 745 1185 H 945"/>
+  <path class="flow both" d="M 765 1185 H 945"/>
   <g aria-label="Service Alerting System">
     <rect class="node" x="945" y="1140" width="240" height="90"/>
     <text class="title" x="1065" y="1177">Service Alerting</text>
@@ -217,12 +217,12 @@
   </g>
 
   <!-- Operators are outside the running service; alert delivery is one-way. -->
-  <path class="flow both" d="M 625 1190 V 1390"/>
-  <path class="flow" d="M 1065 1190 V 1435 H 745"/>
+  <path class="flow both" d="M 645 1190 V 1390"/>
+  <path class="flow" d="M 1065 1190 V 1435 H 765"/>
   <g aria-label="Service Ops Team">
-    <rect class="node" x="505" y="1390" width="240" height="90"/>
-    <text class="title" x="625" y="1425">Service Ops</text>
-    <text class="title" x="625" y="1455">Team</text>
+    <rect class="node" x="525" y="1390" width="240" height="90"/>
+    <text class="title" x="645" y="1425">Service Ops</text>
+    <text class="title" x="645" y="1455">Team</text>
   </g>
   </g>
   </g>
