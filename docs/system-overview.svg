@@ -86,23 +86,23 @@
 
   <!-- Match 30px outer-to-plane and plane-to-reader padding. -->
   <g transform="translate(0, 30)">
-  <!-- Standard row whitespace is 60px, measured across visible row bounds. -->
+  <!-- Reader fleets and DNS share a 280..410 row; the next row starts at 440, leaving 30px. -->
   <!-- Reader fleets share a row; the customer edge uses an offset DNS lookaside. -->
   <g aria-label="Datasource 1 Resilient Reader Fleet">
-    <rect class="node" x="213.75" y="280" width="240" height="100"/>
-    <text class="title" x="333.75" y="305">Datasource 1</text>
-    <text class="title" x="333.75" y="329">Resilient</text>
-    <text class="title" x="333.75" y="353">Reader Fleet</text>
+    <rect class="node" x="213.75" y="280" width="240" height="130"/>
+    <text class="title" x="333.75" y="320">Datasource 1</text>
+    <text class="title" x="333.75" y="344">Resilient</text>
+    <text class="title" x="333.75" y="368">Reader Fleet</text>
 
-    <text x="333.75" y="372" style="font-size: 14px;">Extract (E)</text>
+    <text x="333.75" y="387" style="font-size: 14px;">Extract (E)</text>
   </g>
   <g aria-label="Datasource N Resilient Reader Fleet">
-    <rect class="node" x="613.75" y="280" width="240" height="100"/>
-    <text class="title" x="733.75" y="305">Datasource <tspan font-style="italic">N</tspan></text>
-    <text class="title" x="733.75" y="329">Resilient</text>
-    <text class="title" x="733.75" y="353">Reader Fleet</text>
+    <rect class="node" x="613.75" y="280" width="240" height="130"/>
+    <text class="title" x="733.75" y="320">Datasource <tspan font-style="italic">N</tspan></text>
+    <text class="title" x="733.75" y="344">Resilient</text>
+    <text class="title" x="733.75" y="368">Reader Fleet</text>
 
-    <text x="733.75" y="372" style="font-size: 14px;">Extract (E)</text>
+    <text x="733.75" y="387" style="font-size: 14px;">Extract (E)</text>
   </g>
 
   <g aria-label="CDN for the foobar.com landing page">
@@ -112,8 +112,8 @@
     <text class="small" x="1065" y="524">Landing page &amp; assets</text>
   </g>
 
-  <path class="flow" d="M 333.75 380 V 490 H 413.75"/>
-  <path class="flow" d="M 733.75 380 V 490 H 653.75"/>
+  <path class="flow" d="M 333.75 410 V 490 H 413.75"/>
+  <path class="flow" d="M 733.75 410 V 490 H 653.75"/>
   <path class="flow both" d="M 1065 540 V 600"/>
   <g aria-label="Resilient message queue">
     <rect class="node" x="413.75" y="440" width="240" height="100"/>
