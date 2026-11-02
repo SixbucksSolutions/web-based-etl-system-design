@@ -23,6 +23,8 @@ A practical guide to turning external API data into a service people pay a month
     - [4.2.5 Monitoring/Alerting](#425-monitoringalerting)
   - [4.3 Resilient Logging Subsystem](#43-resilient-logging-subsystem)
     - [4.3.1 Monitoring/Alerting](#431-monitoringalerting)
+  - [4.4 Service Health Management](#44-service-health-management)
+    - [4.4.1 Monitoring/Alerting](#441-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -30,17 +32,17 @@ A practical guide to turning external API data into a service people pay a month
 External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying subscribers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; subscriber requests use our API to access the results.
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The tall database sits between the DB writer and middleware, with straight connectors entering its sides. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, and alerting services connect the system to the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/322cf00ea999022036468206e5a100a91298eae6/docs/system-overview.svg)
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The tall database sits between the DB writer and middleware, with straight connectors entering its sides. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/973cb0208568238ad1fbefeca9f20ca9a240b783/docs/system-overview.svg)
 
-The outer dotted box marks our sphere of control; data providers, subscribers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains monitoring and alerting for operators. These services support the data plane.
+The outer dotted box marks our sphere of control; data providers, subscribers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains service health management, monitoring, and alerting for operators. These services support the data plane.
 
-Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
+Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
 ## 2. Observability/Monitoring/Alerting
 
 Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up. Every component in section 4 closes with **Monitoring/Alerting**, covering what to watch and when to act as we design that component.
 
-Metrics from every component reach a shared **Metrics Store**, whether pushed or collected by a scraper. The **Monitoring Platform** queries those measurements for dashboards and alert conditions; the **Service Alerting System** groups and routes notifications to the **Service Ops Team**, who use Monitoring to investigate. These are [logical responsibilities](https://prometheus.io/docs/alerting/latest/overview/); one managed service may provide several of them. The diagram connects Alerting to Monitoring, with Monitoring accessing the Metrics Store.
+Metrics from every component reach a shared **Metrics Store**, whether pushed or collected by a scraper. The **Monitoring Platform** queries those measurements for dashboards and alert conditions; **Service Health Management** uses native health checks and monitoring signals to right-size workloads and replace unhealthy instances; the **Service Ops Team Alerting System** groups and routes notifications to the **Service Ops Team**, who use Monitoring to investigate. These are [logical responsibilities](https://prometheus.io/docs/alerting/latest/overview/); one managed service may provide several of them. The diagram connects Alerting to Monitoring, with Monitoring accessing the Metrics Store.
 
 **Silence can be its own problem.** Send recurring test alerts through production detection, routing, and delivery; record arrival at the destination before filtering them out of routine human notifications. If that heartbeat stops, an independent watchdog must raise its **own alert**, potentially **out of band (OOB)** through a channel that doesn't depend on the primary alerting system. Occasionally test actual owner notifications too.
 
@@ -144,6 +146,16 @@ On a plan that supports it, add a [read replica](https://docs.digitalocean.com/p
 #### 4.3.1 Monitoring/Alerting
 
 Watch delivery delay, rejected or dropped records, collector backlogs, storage growth, and search availability. Send known test log events from each component and verify they arrive and can be found by correlation ID. Alert on missing events or stalled collection through an independent path that still works when the logging service is unavailable.
+
+### 4.4 Service Health Management
+
+**Right-size service components and replace unhealthy instances.** Use the hosting platform or a suitable supervisor to maintain the intended healthy capacity, restart or replace failed workers, and confirm replacements are ready.
+
+Keep health assessment separate from recovery decisions, even when one platform implements both. [Liveness checks](https://kubernetes.io/docs/concepts/workloads/pods/probes/) identify stuck or failed processes; readiness checks decide whether an instance should accept work. A readiness failure alone is not a restart instruction. Native checks drive local recovery; monitoring adds fleet-wide capacity and performance signals. Bound scaling and restart rates, and distinguish a failed worker from an unavailable dependency so an outage does not trigger a replacement storm. Keep policies versioned, and give Ops controlled, audited ways to pause automation or recover service. This is an operational capability in our Management Plane; its automatic [desired-state reconciliation](https://kubernetes.io/docs/concepts/architecture/controller/) is a control-plane function, not a requirement to build a custom service or use Kubernetes.
+
+#### 4.4.1 Monitoring/Alerting
+
+Monitor desired versus healthy instance counts, time to restore healthy capacity, failed replacements, repeated restarts, and blocked scaling actions. Log recovery decisions and alert when automation cannot restore service or repeatedly makes health worse. Test recovery and the ability to stop unsafe automation; keep an independent alert path for failures of the health-management mechanism itself.
 
 ## License
 
