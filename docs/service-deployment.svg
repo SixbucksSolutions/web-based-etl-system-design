@@ -105,32 +105,29 @@
     <rect class="member" x="715" y="1245" width="160" height="40" rx="5"/>
     <text class="detail" x="795" y="1270">API instance 2</text>
   </g>
-  <g aria-label="Service Health Management Fleet, two self-hosted deployments">
-    <text class="label" x="180" y="1350">Service Health</text>
-    <text class="detail" x="180" y="1372">Management Fleet</text>
+  <g aria-label="Service Health Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1362">Service Health Fleet</text>
     <rect class="member" x="405" y="1335" width="160" height="40" rx="5"/>
     <text class="detail" x="485" y="1360">Health agent 1</text>
     <rect class="member" x="715" y="1335" width="160" height="40" rx="5"/>
     <text class="detail" x="795" y="1360">Health agent 2</text>
   </g>
-  <g aria-label="Metrics Store Independent replicas, two self-hosted deployments">
-    <text class="label" x="180" y="1440">Metrics Store</text>
-    <text class="detail" x="180" y="1462">Independent replicas</text>
+  <g aria-label="Metrics Store Fleet, independent replicas, two self-hosted deployments">
+    <text class="label" x="180" y="1452">Metrics Store Fleet</text>
     <rect class="member" x="405" y="1425" width="160" height="40" rx="5"/>
     <text class="detail" x="485" y="1450">Metrics replica 1</text>
     <rect class="member" x="715" y="1425" width="160" height="40" rx="5"/>
     <text class="detail" x="795" y="1450">Metrics replica 2</text>
   </g>
-  <g aria-label="Monitoring Platform , two self-hosted deployments">
-    <text class="label" x="180" y="1542">Monitoring Platform</text>
+  <g aria-label="Monitoring Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1542">Monitoring Fleet</text>
     <rect class="member" x="405" y="1515" width="160" height="40" rx="5"/>
     <text class="detail" x="485" y="1540">Monitor 1</text>
     <rect class="member" x="715" y="1515" width="160" height="40" rx="5"/>
     <text class="detail" x="795" y="1540">Monitor 2</text>
   </g>
-  <g aria-label="Service Ops Team Alerting System, two self-hosted deployments">
-    <text class="label" x="180" y="1620">Service Ops Team</text>
-    <text class="detail" x="180" y="1642">Alerting System</text>
+  <g aria-label="Alerting Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1632">Alerting Fleet</text>
     <rect class="member" x="405" y="1605" width="160" height="40" rx="5"/>
     <text class="detail" x="485" y="1630">Alert worker 1</text>
     <rect class="member" x="715" y="1605" width="160" height="40" rx="5"/>
