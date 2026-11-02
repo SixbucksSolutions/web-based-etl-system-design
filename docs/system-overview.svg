@@ -173,10 +173,10 @@
 
   <!-- Application API calls are separate from static landing-page delivery. -->
   <path class="flow both" d="M 653.75 842 L 722.5 767"/>
-  <text x="724" y="810" style="font-size: 12px;">
-    <tspan x="724">Reads</tspan>
-    <tspan x="724" dy="14">+</tspan>
-    <tspan x="724" dy="14">Writes</tspan>
+  <text x="688.125" y="840" style="font-size: 12px;">
+    <tspan x="688.125">Reads</tspan>
+    <tspan x="688.125" dy="14">+</tspan>
+    <tspan x="688.125" dy="14">Writes</tspan>
   </text>
   <g aria-label="API Load Balancer for api.foobar.com">
     <rect class="node" x="945" y="842" width="240" height="90"/>
