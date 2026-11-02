@@ -65,7 +65,7 @@
     <text class="detail" x="795" y="1427">Persistent metrics storage</text>
   </g>
   <g aria-label="Failure Domain or Availability Zone 3, database replica only">
-    <rect class="boundary" x="965" y="290" width="280" height="195" rx="8"/>
+    <rect class="boundary" x="965" y="290" width="280" height="1190" rx="8"/>
     <text class="label" x="1105" y="325">Failure Domain / AZ 3</text>
   </g>
   <text class="label" x="180" y="404">Database tier</text>
