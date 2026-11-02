@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="2150" viewBox="0 0 1290 2150" role="img" aria-labelledby="deployment-title deployment-description">
-  <title id="deployment-title">Service deployment across DigitalOcean and a second cloud provider</title>
-  <desc id="deployment-description">DigitalOcean contains three illustrative failure-domain columns. The Managed services group shows load balancing, logging, and secrets as shared bars across all three columns; these indicate shared use, not verified physical replica placement. Managed Valkey has a primary in AZ 1 and a standby in AZ 2 as target placement requiring provider confirmation. DigitalOcean documents same-region standbys, not this AZ mapping. Four separate PostgreSQL instances follow: Primary and Read-only Replica 1 in domain 1, Standby Failover and Read-only Replica 2 in domain 2. Each of domains 1 and 2 contains one worker VM. AZ 3 has no application VM or PostgreSQL instance. Eight self-hosted service rows span both worker VMs. Either worker must support essential load alone. Below DigitalOcean, CSP 2, for example AWS, Azure, or Google, contains three illustrative availability zones spanned by a managed message queue and DLQ. Provider examples are alternatives. Provider placement, failover and coordination requirements must be verified separately.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="2300" viewBox="0 0 980 2300" role="img" aria-labelledby="deployment-title deployment-description">
+  <title id="deployment-title">DigitalOcean single-region deployment with node redundancy</title>
+  <desc id="deployment-description">One DigitalOcean region, illustrated by nyc3, contains a regional API load balancer, a regional Managed OpenSearch cluster, a regional Secrets Manager container, and a Managed Valkey primary and standby. A PostgreSQL primary, standby and two read-only replicas occupy the same region on an eligible configuration. Two Droplets each run eight self-hosted service roles, for sixteen illustrated deployments. Redundant instances and managed failover protect against supported node failures, not loss of the entire region. A second provider below operates the managed queue across three illustrative availability zones inside one region, protecting against an AZ failure rather than loss of that entire region. These are alternative providers, not three separate deployments. No availability-zone placement is asserted inside DigitalOcean.</desc>
   <style>
     text { font-family: Arial, Helvetica, sans-serif; fill: #1e293b; text-anchor: middle; }
     .boundary { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
@@ -12,168 +12,159 @@
     .label { font-size: 18px; font-weight: 600; }
     .detail { font-size: 15px; }
   </style>
-  <rect width="1290" height="2150" fill="#ffffff"/>
-  <g aria-label="DigitalOcean application deployment">
-  <rect class="boundary" x="15" y="15" width="1260" height="1775" rx="10"/>
-  <text class="title" x="645" y="51">DigitalOcean</text>
-  <g transform="translate(0, -30)">
-  <rect class="band" x="45" y="975" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1065" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1155" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1245" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1335" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1425" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1515" width="905" height="60" rx="5"/>
-  <rect class="band" x="45" y="1605" width="905" height="60" rx="5"/>
-  <g aria-label="Failure Domain or Availability Zone 1, Compute Instance 1">
-    <rect class="boundary" x="345" y="110" width="280" height="1645" rx="8"/>
-    <text class="label" x="485" y="145">Failure Domain / AZ 1</text>
-    <rect class="compute" x="375" y="880" width="220" height="845" rx="7"/>
-    <text class="label" x="485" y="914">Compute Instance 1</text>
-    <text class="detail" x="485" y="941">Droplet / VM</text>
-  </g>
-  <g aria-label="Failure Domain or Availability Zone 2, Compute Instance 2">
-    <rect class="boundary" x="655" y="110" width="280" height="1645" rx="8"/>
-    <text class="label" x="795" y="145">Failure Domain / AZ 2</text>
-    <rect class="compute" x="685" y="880" width="220" height="845" rx="7"/>
-    <text class="label" x="795" y="914">Compute Instance 2</text>
-    <text class="detail" x="795" y="941">Droplet / VM</text>
-  </g>
-  <g aria-label="Failure Domain or Availability Zone 3, no application VM or PostgreSQL instance">
-    <rect class="boundary" x="965" y="110" width="280" height="1645" rx="8"/>
-    <text class="label" x="1105" y="145">Failure Domain / AZ 3</text>
-  </g>
-  <g aria-label="Managed services shared scope and target placement">
-    <text class="label" x="180" y="195">Managed services</text>
-    <text class="detail" x="795" y="195">Shared use across zones; provider replica placement not shown</text>
-    <rect class="node" x="45" y="220" width="1200" height="60" rx="6"/>
-    <text class="title" x="645" y="257">API Load Balancer</text>
-    <rect class="node" x="45" y="310" width="1200" height="60" rx="6"/>
-    <text class="title" x="645" y="347">Resilient Logging</text>
-    <rect class="node" x="45" y="400" width="1200" height="60" rx="6"/>
-    <text class="title" x="645" y="437">Managed Secrets Store</text>
+  <rect width="980" height="2300" fill="#ffffff"/>
+  <g aria-label="DigitalOcean">
+    <rect class="boundary" x="15" y="15" width="950" height="1825" rx="10"/>
+    <text class="title" x="490" y="51">DigitalOcean</text>
+  <g aria-label="One DigitalOcean deployment region: nyc3 example">
+    <rect class="boundary" x="35" y="85" width="920" height="1690" rx="8"/>
+    <text class="label" x="495" y="118">One region / datacenter (e.g., nyc3)</text>
+    <text class="detail" x="495" y="147">Node redundancy within one region; no region-outage protection</text>
+    <text class="label" x="180" y="185">Managed services</text>
+    <rect class="node" x="65" y="210" width="860" height="60" rx="6"/>
+    <text class="label" x="495" y="235">Regional API Load Balancer</text>
+    <text class="detail" x="495" y="257">Routes to healthy application instances</text>
+    <rect class="node" x="65" y="300" width="860" height="60" rx="6"/>
+    <text class="label" x="495" y="325">Managed OpenSearch</text>
+    <text class="detail" x="495" y="347">Regional cluster with at least 3 nodes for node failover</text>
+    <rect class="node" x="65" y="390" width="860" height="60" rx="6"/>
+    <text class="label" x="495" y="415">Managed Secrets Store</text>
+    <text class="detail" x="495" y="437">Regional secret container</text>
     <text class="label" x="180" y="515">Managed Valkey</text>
-    <text class="detail" x="180" y="540">Target: separate AZs</text>
-    <text x="180" y="562" style="font-size: 13px;">Confirm placement with DO</text>
-    <g aria-label="Valkey primary, target placement in AZ 1">
-      <rect class="node" x="375" y="490" width="220" height="90" rx="6"/>
-      <text class="label" x="485" y="528">Valkey Primary</text>
-      <text class="detail" x="485" y="556">In-memory cache</text>
-    </g>
-    <g aria-label="Valkey standby, target placement in AZ 2 requires provider confirmation">
-      <rect class="node" x="685" y="490" width="220" height="90" rx="6"/>
-      <text class="label" x="795" y="528">Valkey Standby</text>
-      <text class="detail" x="795" y="556">Failover copy</text>
-    </g>
+    <text class="detail" x="180" y="541">One regional cluster</text>
+  <g aria-label="Valkey primary in the same region">
+    <rect class="node" x="375" y="480" width="220" height="90" rx="6"/>
+    <text class="label" x="485" y="515">Valkey Primary</text>
+    <text class="detail" x="485" y="543">In-memory cache</text>
   </g>
-  <text class="label" x="180" y="679">Database tier</text>
-  <text class="detail" x="180" y="706">Separate single-zone instances</text>
-  <text class="detail" x="180" y="730">PostgreSQL + TimescaleDB</text>
-  <g aria-label="Primary database in failure domain 1">
-    <rect class="node" x="375" y="640" width="220" height="90" rx="6"/>
-    <text class="label" x="485" y="678">Primary (Master)</text>
-    <text class="detail" x="485" y="706">Read/write</text>
+  <g aria-label="Valkey standby in the same region">
+    <rect class="node" x="685" y="480" width="220" height="90" rx="6"/>
+    <text class="label" x="795" y="515">Valkey Standby</text>
+    <text class="detail" x="795" y="543">Node failover</text>
   </g>
-  <g aria-label="Standby failover database in failure domain 2">
-    <rect class="node" x="685" y="640" width="220" height="90" rx="6"/>
-    <text class="label" x="795" y="678">Standby Failover</text>
-    <text class="detail" x="795" y="706">Promotion candidate</text>
+    <text class="label" x="180" y="665">Database tier</text>
+    <text class="detail" x="180" y="691">Eligible plan required</text>
+    <text class="detail" x="180" y="714">PostgreSQL; TimescaleDB*</text>
+  <g aria-label="PostgreSQL primary in the same region">
+    <rect class="node" x="375" y="630" width="220" height="90" rx="6"/>
+    <text class="label" x="485" y="665">Primary (Master)</text>
+    <text class="detail" x="485" y="693">Read/write</text>
   </g>
-  <g aria-label="Read-only replica 2 in failure domain 2">
-    <rect class="node" x="685" y="760" width="220" height="90" rx="6"/>
-    <text class="label" x="795" y="798">Read-only Replica 2</text>
-    <text class="detail" x="795" y="826">Customer queries</text>
+  <g aria-label="PostgreSQL standby in the same region">
+    <rect class="node" x="685" y="630" width="220" height="90" rx="6"/>
+    <text class="label" x="795" y="665">Standby Failover</text>
+    <text class="detail" x="795" y="693">Node failover</text>
   </g>
-  <g aria-label="Read-only replica 1 in failure domain 1">
-    <rect class="node" x="375" y="760" width="220" height="90" rx="6"/>
-    <text class="label" x="485" y="798">Read-only Replica 1</text>
-    <text class="detail" x="485" y="826">Customer queries</text>
+  <g aria-label="PostgreSQL read-only replica 1 in the same region">
+    <rect class="node" x="375" y="750" width="220" height="90" rx="6"/>
+    <text class="label" x="485" y="785">Read-only Replica 1</text>
+    <text class="detail" x="485" y="813">Customer queries</text>
   </g>
-  <text class="label" x="180" y="940">Self-hosted services</text>
-  <g aria-label="Datasource 1 Reader Fleet, one member per worker VM">
-    <text class="label" x="180" y="1000">Datasource 1</text>
-    <text class="detail" x="180" y="1022">Reader Fleet</text>
-    <rect class="member" x="405" y="985" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1010">Reader 1</text>
-    <rect class="member" x="715" y="985" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1010">Reader 2</text>
+  <g aria-label="PostgreSQL read-only replica 2 in the same region">
+    <rect class="node" x="685" y="750" width="220" height="90" rx="6"/>
+    <text class="label" x="795" y="785">Read-only Replica 2</text>
+    <text class="detail" x="795" y="813">Customer queries</text>
   </g>
-  <g aria-label="Datasource N Reader Fleet, one member per worker VM">
-    <text class="label" x="180" y="1090">Datasource N</text>
-    <text class="detail" x="180" y="1112">Reader Fleet</text>
-    <rect class="member" x="405" y="1075" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1100">Reader 1</text>
-    <rect class="member" x="715" y="1075" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1100">Reader 2</text>
+    <text class="detail" x="495" y="873" style="font-size: 13px;">*TimescaleDB + HA depends on edition and existing-cluster eligibility.</text>
+    <rect class="band" x="65" y="995" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1085" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1175" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1265" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1355" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1445" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1535" width="860" height="60" rx="5"/>
+    <rect class="band" x="65" y="1625" width="860" height="60" rx="5"/>
+  <g aria-label="Worker Droplet 1 in the same region">
+    <rect class="compute" x="375" y="900" width="220" height="845" rx="7"/>
+    <text class="label" x="485" y="934">Compute Instance 1</text>
+    <text class="detail" x="485" y="961">Droplet / VM</text>
   </g>
-  <g aria-label="DB Writer Fleet , one member per worker VM">
-    <text class="label" x="180" y="1192">DB Writer Fleet</text>
-    <rect class="member" x="405" y="1165" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1190">Writer 1</text>
-    <rect class="member" x="715" y="1165" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1190">Writer 2</text>
+  <g aria-label="Worker Droplet 2 in the same region">
+    <rect class="compute" x="685" y="900" width="220" height="845" rx="7"/>
+    <text class="label" x="795" y="934">Compute Instance 2</text>
+    <text class="detail" x="795" y="961">Droplet / VM</text>
   </g>
-  <g aria-label="API Service Fleet , one member per worker VM">
-    <text class="label" x="180" y="1282">API Service Fleet</text>
-    <rect class="member" x="405" y="1255" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1280">API instance 1</text>
-    <rect class="member" x="715" y="1255" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1280">API instance 2</text>
+    <text class="label" x="180" y="960">Self-hosted services</text>
+  <g aria-label="Datasource 1 Reader Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1020">Datasource 1</text>
+    <text class="detail" x="180" y="1042">Reader Fleet</text>
+    <rect class="member" x="405" y="1005" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1030">Reader 1</text>
+    <rect class="member" x="715" y="1005" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1030">Reader 2</text>
   </g>
-  <g aria-label="Service Health Management Fleet, one member per worker VM">
-    <text class="label" x="180" y="1360">Service Health</text>
-    <text class="detail" x="180" y="1382">Management Fleet</text>
-    <rect class="member" x="405" y="1345" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1370">Health agent 1</text>
-    <rect class="member" x="715" y="1345" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1370">Health agent 2</text>
+  <g aria-label="Datasource N Reader Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1110">Datasource N</text>
+    <text class="detail" x="180" y="1132">Reader Fleet</text>
+    <rect class="member" x="405" y="1095" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1120">Reader 1</text>
+    <rect class="member" x="715" y="1095" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1120">Reader 2</text>
   </g>
-  <g aria-label="Metrics Store, one independent replica per worker VM">
-    <text class="label" x="180" y="1450">Metrics Store</text>
-    <text class="detail" x="180" y="1472">Independent replicas</text>
-    <rect class="member" x="405" y="1435" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1460">Metrics replica 1</text>
-    <rect class="member" x="715" y="1435" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1460">Metrics replica 2</text>
+  <g aria-label="DB Writer Fleet , two self-hosted deployments">
+    <text class="label" x="180" y="1212">DB Writer Fleet</text>
+    <rect class="member" x="405" y="1185" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1210">Writer 1</text>
+    <rect class="member" x="715" y="1185" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1210">Writer 2</text>
   </g>
-  <g aria-label="Monitoring Platform , one member per worker VM">
-    <text class="label" x="180" y="1552">Monitoring Platform</text>
-    <rect class="member" x="405" y="1525" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1550">Monitor 1</text>
-    <rect class="member" x="715" y="1525" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1550">Monitor 2</text>
+  <g aria-label="API Service Fleet , two self-hosted deployments">
+    <text class="label" x="180" y="1302">API Service Fleet</text>
+    <rect class="member" x="405" y="1275" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1300">API instance 1</text>
+    <rect class="member" x="715" y="1275" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1300">API instance 2</text>
   </g>
-  <g aria-label="Service Ops Team Alerting System, one member per worker VM">
-    <text class="label" x="180" y="1630">Service Ops Team</text>
-    <text class="detail" x="180" y="1652">Alerting System</text>
-    <rect class="member" x="405" y="1615" width="160" height="40" rx="5"/>
-    <text class="detail" x="485" y="1640">Alert worker 1</text>
-    <rect class="member" x="715" y="1615" width="160" height="40" rx="5"/>
-    <text class="detail" x="795" y="1640">Alert worker 2</text>
+  <g aria-label="Service Health Management Fleet, two self-hosted deployments">
+    <text class="label" x="180" y="1380">Service Health</text>
+    <text class="detail" x="180" y="1402">Management Fleet</text>
+    <rect class="member" x="405" y="1365" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1390">Health agent 1</text>
+    <rect class="member" x="715" y="1365" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1390">Health agent 2</text>
   </g>
-  <text class="label" x="645" y="1792">DO baseline: 2 Droplets + 16 self-hosted service deployments + 4 DB instances + 4 managed services</text>
+  <g aria-label="Metrics Store Independent replicas, two self-hosted deployments">
+    <text class="label" x="180" y="1470">Metrics Store</text>
+    <text class="detail" x="180" y="1492">Independent replicas</text>
+    <rect class="member" x="405" y="1455" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1480">Metrics replica 1</text>
+    <rect class="member" x="715" y="1455" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1480">Metrics replica 2</text>
+  </g>
+  <g aria-label="Monitoring Platform , two self-hosted deployments">
+    <text class="label" x="180" y="1572">Monitoring Platform</text>
+    <rect class="member" x="405" y="1545" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1570">Monitor 1</text>
+    <rect class="member" x="715" y="1545" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1570">Monitor 2</text>
+  </g>
+  <g aria-label="Service Ops Team Alerting System, two self-hosted deployments">
+    <text class="label" x="180" y="1650">Service Ops Team</text>
+    <text class="detail" x="180" y="1672">Alerting System</text>
+    <rect class="member" x="405" y="1635" width="160" height="40" rx="5"/>
+    <text class="detail" x="485" y="1660">Alert worker 1</text>
+    <rect class="member" x="715" y="1635" width="160" height="40" rx="5"/>
+    <text class="detail" x="795" y="1660">Alert worker 2</text>
   </g>
   </g>
-  <g aria-label="CSP 2, for example AWS, Azure, or Google, with three availability zones">
-    <rect class="boundary" x="15" y="1820" width="1260" height="300" rx="10"/>
-    <text class="title" x="645" y="1856">CSP 2 (e.g., AWS, Azure, Google)</text>
-    <g aria-label="Second provider availability zone 1">
-      <rect class="compute" x="45" y="1890" width="380" height="200" rx="8"/>
-      <text class="label" x="235" y="1920">AZ 1</text>
-    </g>
-    <g aria-label="Second provider availability zone 2">
-      <rect class="compute" x="455" y="1890" width="380" height="200" rx="8"/>
-      <text class="label" x="645" y="1920">AZ 2</text>
-    </g>
-    <g aria-label="Second provider availability zone 3">
-      <rect class="compute" x="865" y="1890" width="380" height="200" rx="8"/>
-      <text class="label" x="1055" y="1920">AZ 3</text>
-    </g>
-    <g aria-label="Managed Message Queue spans all three provider zones">
-      <rect class="node" x="65" y="1955" width="1160" height="100" rx="6"/>
-      <text class="title" x="645" y="1987">Managed Message Queue</text>
-      <text class="detail" x="645" y="2014">Datasource queues + DLQ (e.g., Amazon SQS)</text>
-      <text class="detail" x="645" y="2039">Provider-operated multi-zone replication (illustrative)</text>
+    <text class="label" x="490" y="1812" style="font-size: 16px;">DO baseline: 2 Droplets + 16 self-hosted service deployments + 4 DB instances + 4 managed services</text>
+  </g>
+  <g aria-label="Second cloud provider: one region with three illustrative availability zones">
+    <rect class="boundary" x="15" y="1870" width="950" height="400" rx="10"/>
+    <text class="title" x="490" y="1906">CSP 2 (e.g., AWS, Azure, Google)</text>
+    <g aria-label="One region contains three availability zones">
+      <rect class="boundary" x="35" y="1935" width="910" height="305" rx="8"/>
+      <text class="label" x="490" y="1968">One region — three availability zones</text>
+      <rect class="compute" x="65" y="2000" width="263.333" height="210" rx="8"/>
+      <text class="label" x="196.666" y="2030">AZ 1</text>
+      <rect class="compute" x="358.333" y="2000" width="263.333" height="210" rx="8"/>
+      <text class="label" x="490" y="2030">AZ 2</text>
+      <rect class="compute" x="651.666" y="2000" width="263.333" height="210" rx="8"/>
+      <text class="label" x="783.333" y="2030">AZ 3</text>
+      <rect class="node" x="85" y="2065" width="810" height="100" rx="6"/>
+      <text class="title" x="490" y="2097">Managed Message Queue</text>
+      <text class="detail" x="490" y="2124">Datasource queues + DLQ (e.g., Amazon SQS)</text>
+      <text class="detail" x="490" y="2149">Provider-operated multi-AZ replication (illustrative)</text>
     </g>
   </g>
 </svg>
