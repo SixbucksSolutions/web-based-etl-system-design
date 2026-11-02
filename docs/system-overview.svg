@@ -185,7 +185,7 @@
 
   </g>
 
-  <g transform="translate(460, -220)">
+  <g transform="translate(348.75, -220)">
   <g aria-label="Metrics from every component reach the shared Metrics Store">
     <path class="metric-flow" d="M 45 1120 L 65 1140"/>
     <path class="metric-flow" d="M 325 1120 L 305 1140"/>
@@ -198,16 +198,16 @@
     <text class="title" x="185" y="1205">Store</text>
   </g>
   </g>
-  <path class="flow both" d="M 645 1010 V 1100"/>
+  <path class="flow both" d="M 533.75 1010 V 1100"/>
 
   <g transform="translate(0, -40)">
   <!-- Shared observability roles; these may be provided by one managed service. -->
   <g aria-label="Monitoring Platform">
-    <rect class="node" x="525" y="1140" width="240" height="90"/>
-    <text class="title" x="645" y="1177">Monitoring</text>
-    <text class="title" x="645" y="1205">Platform</text>
+    <rect class="node" x="413.75" y="1140" width="240" height="90"/>
+    <text class="title" x="533.75" y="1177">Monitoring</text>
+    <text class="title" x="533.75" y="1205">Platform</text>
   </g>
-  <path class="flow both" d="M 765 1185 H 945"/>
+  <path class="flow both" d="M 653.75 1185 H 945"/>
   <g aria-label="Service Alerting System">
     <rect class="node" x="945" y="1140" width="240" height="90"/>
     <text class="title" x="1065" y="1177">Service Alerting</text>
@@ -217,12 +217,12 @@
   </g>
 
   <!-- Operators are outside the running service; alert delivery is one-way. -->
-  <path class="flow both" d="M 645 1190 V 1390"/>
-  <path class="flow" d="M 1065 1190 V 1435 H 765"/>
+  <path class="flow both" d="M 533.75 1190 V 1390"/>
+  <path class="flow" d="M 1065 1190 V 1435 H 653.75"/>
   <g aria-label="Service Ops Team">
-    <rect class="node" x="525" y="1390" width="240" height="90"/>
-    <text class="title" x="645" y="1425">Service Ops</text>
-    <text class="title" x="645" y="1455">Team</text>
+    <rect class="node" x="413.75" y="1390" width="240" height="90"/>
+    <text class="title" x="533.75" y="1425">Service Ops</text>
+    <text class="title" x="533.75" y="1455">Team</text>
   </g>
   </g>
   </g>
