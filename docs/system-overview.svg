@@ -119,11 +119,10 @@
 
   <!-- Shift the second row and everything below it together to preserve existing gaps. -->
   <g transform="translate(0, 30)">
-  <g aria-label="CDN for the foobar.com landing page">
+  <g aria-label="CDN for foobar.com static assets">
     <rect class="node" x="945" y="440" width="240" height="100"/>
-    <text class="title" x="1065" y="470">CDN</text>
-    <text class="detail" x="1065" y="497">foobar.com</text>
-    <text class="small" x="1065" y="524">Landing page &amp; assets</text>
+    <text class="title" x="1065" y="482">CDN</text>
+    <text class="small" x="1065" y="510">foobar.com static assets</text>
   </g>
 
   <path class="flow both" d="M 1065 540 V 600"/>
