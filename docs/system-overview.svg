@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1925" viewBox="0 0 1290 1925" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Four short, double-ended dotted corner arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Customers resolve foobar.com and api.foobar.com through a Managed DNS Service on a lookaside query-and-response branch to the left of the CDN. HTTPS requests go directly to the CDN, which serves the landing page and assets and fetches or revalidates content from the foobar.com origin server. The browser application sends separate HTTPS API requests to an API Load Balancer, which routes them to the API Service, representing multiple server instances. Authentication remains in the API application. DNS does not proxy web requests. The database receives ingested observations from the DB writer. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Four short dotted corner arrows point into it, representing logs from every component going to one shared destination. Logging, Metrics Store, and Managed Secrets Store share the upper Management Plane row, with Service Health Management, Monitoring, and Alerting below them. Metrics from every component reach the shared Metrics Store, shown with four inward dotted corner arrows. The Monitoring Platform connects bidirectionally to the Metrics Store, Service Ops Team Alerting System, and Service Health Management. Service Health Management right-sizes workloads and replaces unhealthy instances; dotted corner arrows represent workload control and status. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
+  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Four short, double-ended dotted corner arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Customers resolve foobar.com and api.foobar.com through a Managed DNS Service on a lookaside query-and-response branch above and to the left of the CDN. HTTPS requests go directly to the CDN, which serves the landing page and assets and fetches or revalidates content from the foobar.com origin server. The browser application sends separate HTTPS API requests to an API Load Balancer, which routes them to the API Service, representing multiple server instances. Authentication remains in the API application. DNS does not proxy web requests. The database receives ingested observations from the DB writer. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Four short dotted corner arrows point into it, representing logs from every component going to one shared destination. Logging, Metrics Store, and Managed Secrets Store share the upper Management Plane row, with Service Health Management, Monitoring, and Alerting below them. Metrics from every component reach the shared Metrics Store, shown with four inward dotted corner arrows. The Monitoring Platform connects bidirectionally to the Metrics Store, Service Ops Team Alerting System, and Service Health Management. Service Health Management right-sizes workloads and replaces unhealthy instances; dotted corner arrows represent workload control and status. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -81,7 +81,7 @@
   </g>
   <!-- DNS is a lookaside lookup; the browser calls the CDN and API endpoint separately. -->
   <path class="flow both" d="M 1065 39 V 470"/>
-  <path class="flow both" d="M 1020 27.5 H 925 V 520 H 905"/>
+  <path class="flow both" d="M 1020 27.5 H 975 V 310"/>
   <path class="flow both" d="M 1110 27.5 H 1225 V 917 H 1185"/>
 
   <!-- Match 30px outer-to-plane and plane-to-reader padding. -->
@@ -122,12 +122,12 @@
     <text class="small" x="533.75" y="522">(e.g., SQS, RabbitMQ)</text>
   </g>
   <g aria-label="Managed DNS Service for foobar.com and api.foobar.com, lookaside lookup">
-    <rect class="node" x="765" y="425" width="140" height="130"/>
-    <text class="title" x="835" y="452">Managed</text>
-    <text class="title" x="835" y="478">DNS</text>
-    <text class="title" x="835" y="504">Service</text>
-    <text x="835" y="528" style="font-size: 14px;">foobar.com</text>
-    <text x="835" y="546" style="font-size: 14px;">api.foobar.com</text>
+    <rect class="node" x="905" y="280" width="140" height="130"/>
+    <text class="title" x="975" y="307">Managed</text>
+    <text class="title" x="975" y="333">DNS</text>
+    <text class="title" x="975" y="359">Service</text>
+    <text x="975" y="383" style="font-size: 14px;">foobar.com</text>
+    <text x="975" y="401" style="font-size: 14px;">api.foobar.com</text>
   </g>
   <g aria-label="Origin Server for foobar.com">
     <rect class="node" x="945" y="600" width="240" height="100"/>
