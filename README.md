@@ -4,7 +4,9 @@ A practical guide to turning external API data into a service people pay a month
 
 ## Table of contents
 
-- [1. Quick Problem Description](#1-quick-problem-description)
+- [1. Overview](#1-overview)
+  - [1.1 High-Level Architecture Diagram](#11-high-level-architecture-diagram)
+  - [1.2 Service Deployment Diagram](#12-service-deployment-diagram)
 - [2. Observability/Monitoring/Alerting](#2-observabilitymonitoringalerting)
 - [3. Logging](#3-logging)
 - [4. System Components](#4-system-components)
@@ -38,9 +40,11 @@ A practical guide to turning external API data into a service people pay a month
     - [4.7.3 Monitoring/Alerting](#473-monitoringalerting)
 - [License](#license)
 
-## 1. Quick Problem Description
+## 1. Overview
 
 External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying customers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; customers reach the web service through its DNS and CDN edge.
+
+### 1.1 High-Level Architecture Diagram
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
 ![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. Separate browser API requests go through a load balancer to the API Service. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/ff4f5c63f1fec62331f3406e96705d3b1505487d/docs/system-overview.svg)
@@ -48,6 +52,17 @@ External data sources provide updates through REST polling, WebSocket push, or o
 The outer dotted box marks our sphere of control; data providers, customers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains service health management, monitoring, and alerting for operators. These services support the data plane.
 
 Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The browser application calls `api.foobar.com` separately through an API load balancer to the API Service. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
+
+### 1.2 Service Deployment Diagram
+
+**Future-state HA deployment — adopt it one service at a time.** A single Droplet can remain your starting point; it has no redundancy against losing that host. This diagram shows the target for surviving a host or failure-domain loss. Migrate individual services and add redundancy gradually, and describe a component as highly available only when its required redundancy and failover are configured and tested.
+
+<!-- Update this pinned URL when the deployment diagram changes. -->
+![Future-state HA deployment: five shared managed services sit outside three failure-domain columns but within the CSP boundary. Each domain contains one compute instance, and the eight self-hosted service rows have a member on each instance.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/c2df36d85fc4f28d581c4026fbef45c8190db740/docs/service-deployment.svg)
+
+**Baseline shown: three compute instances (for example, Droplets), plus the shared managed services.** Horizontal bands represent logical services; their cells are processes or cluster members on each host. RabbitMQ spans the three hosts with persistent storage for the datasource queue and DLQ. Coordinate health-management replicas and deduplicate monitoring/alert delivery; three running copies alone do not provide correct failover. These services share CPU, RAM, and disk I/O; size the remaining two hosts to carry essential workload after one host or domain fails. Deployment, patching, upgrades, and recovery testing also take ongoing time.
+
+Managed services outside the AZ boxes represent **explicitly configured multi-domain resilience**, not an automatic property of every managed plan. Map the generic [failure domains/AZs](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html) to the chosen provider's actual placement and failover capabilities; [DigitalOcean's datacenter/region names](https://docs.digitalocean.com/platform/regional-availability/) are not a promise of interchangeable AWS-style AZ behavior. This illustrates a chosen HA resource footprint, not a universal minimum or a guarantee of 99% uptime. DNS, CDN, and origin placement are left for the customer-edge deployment detail.
 
 ## 2. Observability/Monitoring/Alerting
 
