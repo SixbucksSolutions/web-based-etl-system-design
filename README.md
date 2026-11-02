@@ -59,7 +59,7 @@ Readers perform extraction; the DB writers validate, transform, and load observa
 **Two copies of each application component is a good start.** This example puts multiple instances inside **one DigitalOcean deployment region**. It aims for recovery from supported process or node failures; it does **not** claim the service survives loss of that whole region. Add redundancy incrementally, size the surviving capacity, and test the actual failure modes.
 
 <!-- Update this pinned URL when the deployment diagram changes. -->
-![DigitalOcean single-region deployment: regional load balancer, OpenSearch, secrets, Valkey primary and standby, PostgreSQL primary and standby plus two read replicas, and two worker Droplets. A second provider operates a managed queue across three illustrative availability zones inside one region. Node redundancy does not provide region-outage protection.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/18114f206b35aedbe3654414e6e5ff623091ba30/docs/service-deployment.svg)
+![DigitalOcean single-region deployment: regional load balancer, OpenSearch, secrets, Valkey primary and standby, PostgreSQL primary and standby plus two read replicas, and two worker Droplets. A second provider operates a managed queue across three illustrative availability zones inside one region. Node redundancy does not provide region-outage protection.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/85bee5d29f198cf6e79eb2dc195d5979ee9562e3/docs/service-deployment.svg)
 
 _Scope: this is the backend deployment footprint. DNS, CDN, static origin, and independent watchdog/external probes are additional dependencies to account for separately._
 
