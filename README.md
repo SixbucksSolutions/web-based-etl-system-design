@@ -34,7 +34,7 @@ A practical guide to turning external API data into a service people pay a month
     - [4.6.4 Monitoring/Alerting](#464-monitoringalerting)
   - [4.7 Customer API](#47-customer-api)
     - [4.7.1 API Load Balancer](#471-api-load-balancer)
-    - [4.7.2 API Server Fleet](#472-api-server-fleet)
+    - [4.7.2 API Service](#472-api-service)
     - [4.7.3 Monitoring/Alerting](#473-monitoringalerting)
 - [License](#license)
 
@@ -43,11 +43,11 @@ A practical guide to turning external API data into a service people pay a month
 External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying customers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; customers reach the web service through its DNS and CDN edge.
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. Separate browser API requests go through a load balancer to API server instances. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/dd4d85222a6bf63538936f7f7f659a0d8383fdf4/docs/system-overview.svg)
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. Separate browser API requests go through a load balancer to the API Service. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/c8d8cd4684b0406d6e0f9caff80b55e4f32f3665/docs/system-overview.svg)
 
 The outer dotted box marks our sphere of control; data providers, customers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains service health management, monitoring, and alerting for operators. These services support the data plane.
 
-Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The browser application calls `api.foobar.com` separately through an API load balancer and server fleet. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
+Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The browser application calls `api.foobar.com` separately through an API load balancer to the API Service. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
 
 ## 2. Observability/Monitoring/Alerting
 
@@ -208,9 +208,9 @@ After loading the site, the browser application sends HTTPS requests to `api.foo
 
 **Prefer a managed load balancer — RECOMMENDED**, such as [DigitalOcean Load Balancers](https://docs.digitalocean.com/products/networking/load-balancers/). It provides one API entry point and routes requests to healthy, ready server instances. Configure TLS and health checks deliberately; the load balancer's routing decision does not replace application authentication or authorization.
 
-#### 4.7.2 API Server Fleet
+#### 4.7.2 API Service
 
-Run multiple instances across independent failure domains as availability needs grow. In this design, the API application owns authentication and checks customer identity and subscription entitlements before protected operations. Use established [authentication/session libraries](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), and make session validation work across the fleet: a valid login must not depend on returning to one particular server. Instances retrieve required connection settings and secrets through their scoped profiles.
+The API Service can run multiple instances across independent failure domains as availability needs grow. In this design, the API application owns authentication and checks customer identity and subscription entitlements before protected operations. Use established [authentication/session libraries](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), and make session validation work across the fleet: a valid login must not depend on returning to one particular server. Instances retrieve required connection settings and secrets through their scoped profiles.
 
 #### 4.7.3 Monitoring/Alerting
 
