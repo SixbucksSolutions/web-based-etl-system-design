@@ -25,6 +25,8 @@ A practical guide to turning external API data into a service people pay a month
     - [4.3.1 Monitoring/Alerting](#431-monitoringalerting)
   - [4.4 Service Health Management](#44-service-health-management)
     - [4.4.1 Monitoring/Alerting](#441-monitoringalerting)
+  - [4.5 Monitoring Platform](#45-monitoring-platform)
+    - [4.5.1 Monitoring/Alerting](#451-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -42,9 +44,9 @@ Readers perform extraction; the DB writer validates, transforms, and loads obser
 
 Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distributed-systems/) from the start. The owner should learn about problems **no later than customers do**. At every layer, ask what can break, how we'll detect it, what the system should do, and when to notify the owner. A dashboard alone won't wake anyone up. Every component in section 4 closes with **Monitoring/Alerting**, covering what to watch and when to act as we design that component.
 
-Metrics from every component reach a shared **Metrics Store**, whether pushed or collected by a scraper. The **Monitoring Platform** queries those measurements for dashboards and alert conditions; **Service Health Management** uses native health checks and monitoring signals to right-size workloads and replace unhealthy instances; the **Service Ops Team Alerting System** groups and routes notifications to the **Service Ops Team**, who use Monitoring to investigate. These are [logical responsibilities](https://prometheus.io/docs/alerting/latest/overview/); one managed service may provide several of them. The diagram connects Alerting to Monitoring, with Monitoring accessing the Metrics Store.
+Metrics from every component reach a shared **Metrics Store**, whether pushed or collected by a scraper. The **[Monitoring Platform](#45-monitoring-platform)** queries those measurements for dashboards and alert conditions; **Service Health Management** uses native health checks and monitoring signals to right-size workloads and replace unhealthy instances; the **Service Ops Team Alerting System** groups and routes notifications to the **Service Ops Team**, who use Monitoring to investigate. These are [logical responsibilities](https://prometheus.io/docs/alerting/latest/overview/); one managed service may provide several of them. The diagram connects Alerting to Monitoring, with Monitoring accessing the Metrics Store.
 
-Monitor both **freshness** (age of the newest source-timestamped observation committed to the database) and **coverage** (unacceptable gaps between observations). Evaluate each source/data stream against its expected cadence and active periods, allowing for publication delay and late or out-of-order arrivals. Configure the thresholds separately: one-minute updates do not necessarily imply a strict one-minute freshness limit. New arrivals may clear a stale-data alert while an earlier gap remains unresolved.
+Monitor external datasource data for both **freshness** (age of the newest source-timestamped observation committed to the database) and **coverage** (unacceptable gaps between observations). Evaluate each source/data stream against its expected cadence and active periods, allowing for publication delay and late or out-of-order arrivals. Configure the thresholds separately: one-minute updates do not necessarily imply a strict one-minute freshness limit. New arrivals may clear a stale-data alert while an earlier gap remains unresolved.
 
 **Silence can be its own problem.** Send recurring test alerts through production detection, routing, and delivery; record arrival at the destination before filtering them out of routine human notifications. If that heartbeat stops, an independent watchdog must raise its **own alert**, potentially **out of band (OOB)** through a channel that doesn't depend on the primary alerting system. Occasionally test actual owner notifications too.
 
@@ -158,6 +160,14 @@ Keep health assessment separate from recovery decisions, even when one platform 
 #### 4.4.1 Monitoring/Alerting
 
 Monitor desired versus healthy instance counts, time to restore healthy capacity, failed replacements, repeated restarts, and blocked scaling actions. Log recovery decisions and alert when automation cannot restore service or repeatedly makes health worse. Test recovery and the ability to stop unsafe automation; keep an independent alert path for failures of the health-management mechanism itself.
+
+### 4.5 Monitoring Platform
+
+When Monitoring detects **stale or missing external datasource data**, record the affected source, data stream, and time interval, notify Ops through the Service Ops Team Alerting System, and request recovery where supported. Recovery requests are **durable, tracked work**, independent of logging and notifications. Source-specific readers perform the fetches with bounded retries and backoff, publishing recovered observations through the normal ingest pipeline. Keep the gap unresolved until database coverage is verified; escalate failed or impossible recovery rather than silently abandoning it.
+
+#### 4.5.1 Monitoring/Alerting
+
+Watch failed rule evaluations, missing or stale telemetry, failed condition/recovery-request publication, and the age of unresolved conditions. Test that a known data-health condition produces both an Ops notification and a durable recovery request where applicable. Monitor this path independently of the Monitoring Platform itself.
 
 ## License
 
