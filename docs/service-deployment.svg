@@ -47,7 +47,6 @@
     <rect class="compute" x="375" y="605" width="220" height="845" rx="7"/>
     <text class="label" x="485" y="639">Compute Instance 1</text>
     <text class="detail" x="485" y="666">Droplet / VM</text>
-    <text class="detail" x="485" y="1427">Persistent metrics storage</text>
   </g>
   <g aria-label="Failure Domain or Availability Zone 2, Compute Instance 2">
     <rect class="boundary" x="655" y="290" width="280" height="1190" rx="8"/>
@@ -55,7 +54,6 @@
     <rect class="compute" x="685" y="605" width="220" height="845" rx="7"/>
     <text class="label" x="795" y="639">Compute Instance 2</text>
     <text class="detail" x="795" y="666">Droplet / VM</text>
-    <text class="detail" x="795" y="1427">Persistent metrics storage</text>
   </g>
   <g aria-label="Failure Domain or Availability Zone 3, intentionally empty">
     <rect class="boundary" x="965" y="290" width="280" height="1190" rx="8"/>
