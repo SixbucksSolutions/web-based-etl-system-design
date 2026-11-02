@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1695" viewBox="0 0 1290 1695" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Eight short, double-ended dotted arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Eight short dotted arrows point into it, representing logs from every component going to one shared destination. Metrics from every component reach a shared Metrics Store, shown with eight inward dotted arrows. The Monitoring Platform connects bidirectionally to the Metrics Store and Service Alerting System. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
+  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Four short, double-ended dotted corner arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Four short dotted corner arrows point into it, representing logs from every component going to one shared destination. Metrics from every component reach a shared Metrics Store, shown with four inward dotted corner arrows. The Monitoring Platform connects bidirectionally to the Metrics Store and Service Alerting System. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -149,10 +149,6 @@
   <g transform="translate(255, 400)">
   <!-- Short double-ended arrows symbolize credential requests and responses. -->
   <g aria-label="Components request and receive credentials from the Managed Secrets Store">
-    <path class="secrets-flow" d="M 810 602 V 630"/>
-    <path class="secrets-flow" d="M 810 748 V 720"/>
-    <path class="secrets-flow" d="M 662 675 H 690"/>
-    <path class="secrets-flow" d="M 958 675 H 930"/>
     <path class="secrets-flow" d="M 670 610 L 690 630"/>
     <path class="secrets-flow" d="M 950 610 L 930 630"/>
     <path class="secrets-flow" d="M 670 740 L 690 720"/>
@@ -170,10 +166,6 @@
   <g transform="translate(-592.5, 400)">
   <!-- Short inward arrows symbolize every component using one logical log destination. -->
   <g aria-label="Every component sends logs to the Resilient Logging Subsystem">
-    <path class="log-flow" d="M 777.5 602 V 630"/>
-    <path class="log-flow" d="M 777.5 748 V 720"/>
-    <path class="log-flow" d="M 629.5 675 H 657.5"/>
-    <path class="log-flow" d="M 925.5 675 H 897.5"/>
     <path class="log-flow" d="M 637.5 610 L 657.5 630"/>
     <path class="log-flow" d="M 917.5 610 L 897.5 630"/>
     <path class="log-flow" d="M 637.5 740 L 657.5 720"/>
@@ -192,10 +184,6 @@
   <g transform="translate(0, 70)">
   <!-- Shared observability roles; these may be provided by one managed service. -->
   <g aria-label="Metrics from every component reach the shared Metrics Store">
-    <path class="metric-flow" d="M 185 1112 V 1140"/>
-    <path class="metric-flow" d="M 185 1258 V 1230"/>
-    <path class="metric-flow" d="M 37 1185 H 65"/>
-    <path class="metric-flow" d="M 333 1185 H 305"/>
     <path class="metric-flow" d="M 45 1120 L 65 1140"/>
     <path class="metric-flow" d="M 325 1120 L 305 1140"/>
     <path class="metric-flow" d="M 45 1250 L 65 1230"/>
