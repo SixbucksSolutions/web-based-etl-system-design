@@ -8,7 +8,7 @@ A practical guide to turning external API data into a service people pay a month
 - [2. Observability/Monitoring/Alerting](#2-observabilitymonitoringalerting)
 - [3. System Components](#3-system-components)
   - [3.1 Data Ingest](#31-data-ingest)
-    - [3.1.1 External Credentials Vault/Storage](#311-external-credentials-vaultstorage)
+    - [3.1.1 Managed Secrets Store](#311-managed-secrets-store)
     - [3.1.2 Resilient Reader Fleet](#312-resilient-reader-fleet)
     - [3.1.3 Resilient Message Queue](#313-resilient-message-queue)
     - [3.1.4 Resilient DB Writer](#314-resilient-db-writer)
@@ -24,9 +24,9 @@ A practical guide to turning external API data into a service people pay a month
 
 An authenticated REST API publishes data once per minute. Our service fetches it, adds value, and makes it available to paying subscribers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; subscriber requests use our API to access the results.
 
-![System overview: readers poll an external API and look up credentials in a vault to their left; updates flow down through a message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides.](docs/system-overview.svg)
+![System overview: readers poll an external API and look up credentials in the Managed Secrets Store to their left; updates flow down through a message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides.](docs/system-overview.svg)
 
-The dotted box marks our sphere of control; the provider and subscribers are outside it. The vault sits to the reader fleet's left, with a solid, double-ended connection for credential requests and responses. Readers poll the source API over the other bidirectional link. Updates flow down through the queue and DB writer, and both columns connect to the shared database through right-angle side connections. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
+The dotted box marks our sphere of control; the provider and subscribers are outside it. The Managed Secrets Store sits to the reader fleet's left, with a solid, double-ended connection for credential requests and responses. Readers poll the source API over the other bidirectional link. Updates flow down through the queue and DB writer, and both columns connect to the shared database through right-angle side connections. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
 ## 2. Observability/Monitoring/Alerting
 
@@ -40,9 +40,9 @@ Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distribu
 
 Move source updates through readers and a message queue into the database.
 
-#### 3.1.1 External Credentials Vault/Storage
+#### 3.1.1 Managed Secrets Store
 
-A prototype may keep credentials in code or plaintext `.env`/deployment configs. A stolen key or bearer token may impersonate the customer within its permissions. Use an access-controlled [secrets store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html), limit reader access, and plan provider-supported rotation and revocation. **Startup-injected environment variables normally require reader restarts to pick up credential changes; fetching the current secret from the store for each collection cycle can pick up rotations without restarting.** Any caching needs an explicit refresh policy. A hosted service can improve availability and reduce vault maintenance; DigitalOcean documents a [Secrets Manager CLI](https://docs.digitalocean.com/reference/doctl/reference/secrets/) and [API](https://docs.digitalocean.com/reference/api/reference/security/) for readers on Droplets. Protect store-access credentials, check regional resilience, and keep secrets out of code, images, browser bundles, and logs.
+A prototype may keep credentials in code or plaintext `.env`/deployment configs. A stolen key or bearer token may impersonate the customer within its permissions. Use an access-controlled [Managed Secrets Store](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html), limit reader access, and plan provider-supported rotation and revocation. **Startup-injected environment variables normally require reader restarts to pick up credential changes; fetching the current secret from the Managed Secrets Store for each collection cycle can pick up rotations without restarting.** Any caching needs an explicit refresh policy. A managed service can improve availability and reduce maintenance; DigitalOcean documents a [Secrets Manager CLI](https://docs.digitalocean.com/reference/doctl/reference/secrets/) and [API](https://docs.digitalocean.com/reference/api/reference/security/) for readers on Droplets. Protect credentials used to access the Managed Secrets Store, check regional resilience, and keep secrets out of code, images, browser bundles, and logs.
 
 #### 3.1.2 Resilient Reader Fleet
 
@@ -58,7 +58,7 @@ The goal is for every queued copy to be processed successfully, even when anothe
 
 #### 3.1.5 Monitoring/Alerting
 
-**Credentials store:** Watch failed or slow secret retrievals, denied or unexpected access, credential expiry where applicable, and failed rotations. Distinguish vault failures from upstream authentication errors; a healthy reader can still be locked out. Alert on suspected misuse and access failures that threaten ingestion, using audit metadata without logging secret values.
+**Managed Secrets Store:** Watch failed or slow secret retrievals, denied or unexpected access, credential expiry where applicable, and failed rotations. Distinguish Managed Secrets Store failures from upstream authentication errors; a healthy reader can still be locked out. Alert on suspected misuse and access failures that threaten ingestion, using audit metadata without logging secret values.
 
 **Reader fleet:** Track healthy versus expected reader counts, defining health by timely polling and progress. Per reader, track rolling-hour HTTPS connection counts, request attempts, `200` responses, non-`200` responses grouped by status, and socket failures. Track requests and connections separately because keep-alive can reuse a connection. Alert promptly on missing polls or stalled progress; use hourly views to recognize a healthy pattern of life. Compare upstream results with reader progress and independent checks to locate failures, and keep watching response times and source-data age: a `200 OK` can still be stale, and freshness is unknown without reliable source metadata.
 
