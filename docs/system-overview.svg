@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1085" viewBox="0 0 1290 1085" role="img" aria-labelledby="diagram-title diagram-description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1565" viewBox="0 0 1290 1565" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration and sits between the database writer and middleware, centered above the database. Eight short, double-ended dotted arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits in the lower-left corner of the web service. Eight short dotted arrows point into it, representing logs from every component going to one shared destination. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
+  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration and sits between the database writer and middleware, centered above the database. Eight short, double-ended dotted arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits on its own row below the database. Eight short dotted arrows point into it, representing logs from every component going to one shared destination. Metrics from every component reach a shared Metrics Store, shown with eight inward dotted arrows. The Monitoring Platform connects bidirectionally to the Metrics Store and Service Alerting System. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -19,9 +19,9 @@
     .both { marker-start: url(#arrow); }
     .replay { stroke-dasharray: 5 4; }
     .secrets-flow { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; marker-start: url(#log-arrow); marker-end: url(#log-arrow); }
-    .log-flow { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; marker-end: url(#log-arrow); }
+    .log-flow, .metric-flow { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; marker-end: url(#log-arrow); }
   </style>
-  <rect width="1290" height="1085" fill="#ffffff"/>
+  <rect width="1290" height="1565" fill="#ffffff"/>
 
   <!-- Label's bottom is y=45; translated source boxes start at y=70: 25px padding. -->
   <g aria-label="External Data Sources">
@@ -50,8 +50,8 @@
 
   <!-- Preserve the gap below the transfer label and add matching space above it. -->
   <g transform="translate(0, 50)">
-  <rect x="20" y="250" width="1250" height="730" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
-  <text x="645" y="968" style="font-size: 18px; font-weight: 600;">Web service: our sphere of control</text>
+  <rect x="20" y="250" width="1250" height="1050" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+  <text x="645" y="1288" style="font-size: 18px; font-weight: 600;">Web service: our sphere of control</text>
 
   <path class="flow both" d="M 290 90 V 280"/>
   <path class="flow both" d="M 690 90 V 280"/>
@@ -143,7 +143,7 @@
     <text x="810" y="707" style="font-size: 14px;">Credentials &amp; connection config</text>
   </g>
 
-  <g transform="translate(-592.5, 190)">
+  <g transform="translate(-592.5, 330)">
   <!-- Short inward arrows symbolize every component using one logical log destination. -->
   <g aria-label="Every component sends logs to the Resilient Logging Subsystem">
     <path class="log-flow" d="M 777.5 602 V 630"/>
@@ -173,6 +173,44 @@
     <ellipse class="node" cx="810" cy="805" rx="120" ry="18"/>
     <text class="title" x="810" y="848">Service database</text>
     <text class="small" x="810" y="877">PostgreSQL + TimescaleDB</text>
+  </g>
+
+  <!-- Shared observability roles; these may be provided by one managed service. -->
+  <g aria-label="Metrics from every component reach the shared Metrics Store">
+    <path class="metric-flow" d="M 185 1112 V 1140"/>
+    <path class="metric-flow" d="M 185 1258 V 1230"/>
+    <path class="metric-flow" d="M 37 1185 H 65"/>
+    <path class="metric-flow" d="M 333 1185 H 305"/>
+    <path class="metric-flow" d="M 45 1120 L 65 1140"/>
+    <path class="metric-flow" d="M 325 1120 L 305 1140"/>
+    <path class="metric-flow" d="M 45 1250 L 65 1230"/>
+    <path class="metric-flow" d="M 325 1250 L 305 1230"/>
+  </g>
+  <g aria-label="Metrics Store">
+    <rect class="node" x="65" y="1140" width="240" height="90"/>
+    <text class="title" x="185" y="1177">Metrics</text>
+    <text class="title" x="185" y="1205">Store</text>
+  </g>
+  <path class="flow both" d="M 265 1140 V 1095 H 625 V 1140"/>
+  <g aria-label="Monitoring Platform">
+    <rect class="node" x="505" y="1140" width="240" height="90"/>
+    <text class="title" x="625" y="1177">Monitoring</text>
+    <text class="title" x="625" y="1205">Platform</text>
+  </g>
+  <path class="flow both" d="M 745 1185 H 945"/>
+  <g aria-label="Service Alerting System">
+    <rect class="node" x="945" y="1140" width="240" height="90"/>
+    <text class="title" x="1065" y="1177">Service Alerting</text>
+    <text class="title" x="1065" y="1205">System</text>
+  </g>
+
+  <!-- Operators are outside the running service; alert delivery is one-way. -->
+  <path class="flow both" d="M 505 1185 H 445 V 1415 H 505"/>
+  <path class="flow" d="M 1065 1230 V 1415 H 745"/>
+  <g aria-label="Service Ops Team">
+    <rect class="node" x="505" y="1370" width="240" height="90"/>
+    <text class="title" x="625" y="1405">Service Ops</text>
+    <text class="title" x="625" y="1435">Team</text>
   </g>
   </g>
   </g>
