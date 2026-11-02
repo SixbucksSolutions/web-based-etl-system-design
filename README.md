@@ -27,18 +27,23 @@ A practical guide to turning external API data into a service people pay a month
     - [4.4.1 Monitoring/Alerting](#441-monitoringalerting)
   - [4.5 Monitoring Platform](#45-monitoring-platform)
     - [4.5.1 Monitoring/Alerting](#451-monitoringalerting)
+  - [4.6 Customer-Facing Edge](#46-customer-facing-edge)
+    - [4.6.1 Managed DNS Service](#461-managed-dns-service)
+    - [4.6.2 CDN](#462-cdn)
+    - [4.6.3 Origin Server](#463-origin-server)
+    - [4.6.4 Monitoring/Alerting](#464-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
 
-External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying customers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; customer requests use our API to access the results.
+External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying customers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; customers reach the web service through its DNS and CDN edge.
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The tall database sits between the DB writer and middleware, with straight connectors entering its sides. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/0700913a53d1b488237815ea95f746e4c2e883cd/docs/system-overview.svg)
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/48e46fe56a2f5499a47283627b077d5828149925/docs/system-overview.svg)
 
 The outer dotted box marks our sphere of control; data providers, customers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains service health management, monitoring, and alerting for operators. These services support the data plane.
 
-Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
+Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
 
 ## 2. Observability/Monitoring/Alerting
 
@@ -170,6 +175,26 @@ When Monitoring detects **stale or missing external datasource data**, record th
 #### 4.5.1 Monitoring/Alerting
 
 Watch failed rule evaluations, missing or stale telemetry, failed condition/recovery-request publication, and the age of unresolved conditions. Test that a known data-health condition produces both an Ops notification and a durable recovery request where applicable. Monitor this path independently of the Monitoring Platform itself.
+
+### 4.6 Customer-Facing Edge
+
+The landing page at `foobar.com` uses three distinct responsibilities: name resolution, CDN delivery, and origin hosting.
+
+#### 4.6.1 Managed DNS Service
+
+Managed authoritative DNS publishes the records customers use to find the CDN entry point for `foobar.com`. The customer's resolver may answer from cache; otherwise it performs a [DNS lookup](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/welcome-dns-service.html). This is a lookaside exchange of names and addresses. The HTTP request itself goes to the CDN, not through the DNS service.
+
+#### 4.6.2 CDN
+
+Customers connect over HTTPS to the CDN for the landing page and its assets. The CDN [serves cached content or contacts the origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html) when content is missing or needs revalidation. Keep DNS and CDN responsibilities distinct even when one provider supplies both.
+
+#### 4.6.3 Origin Server
+
+The origin hosts the landing page and assets behind the CDN. It must remain available for cache misses and revalidation; a warm cache can temporarily hide an origin failure. This diagram currently shows landing-page delivery; application API requests can be added as their own path.
+
+#### 4.6.4 Monitoring/Alerting
+
+Check DNS resolution and the landing page's HTTPS availability from outside the service. Watch certificate expiry, CDN and origin error rates and latency, and cache behavior. Test an uncached origin fetch as well as cached delivery, so the CDN does not conceal a broken origin until customers miss the cache.
 
 ## License
 
