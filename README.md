@@ -24,8 +24,8 @@ A practical guide to turning external API data into a service people pay a month
 
 External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying subscribers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; subscriber requests use our API to access the results.
 
-<!-- When the diagram changes, refresh v with its git hash-object value to invalidate cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. A shared Managed Secrets Store sits between the fleets, and both fleets feed the message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides.](docs/system-overview.svg?v=97c9f6efac31944b3410bf3fc52a448e29217bf1)
+<!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. A shared Managed Secrets Store sits between the fleets, and both fleets feed the message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/7bdb0f16601b39690d5c9add3a9a87cd46850c2a/docs/system-overview.svg)
 
 The dotted box marks our sphere of control; the providers and subscribers are outside it. Each source connects to its own reader fleet using the transfer methods it supports. The Managed Secrets Store sits between the fleets, with solid, double-ended connections for credential requests and responses. Both fleets feed the shared queue and DB writer, and the ingestion and query paths connect to the database through right-angle side connections. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
