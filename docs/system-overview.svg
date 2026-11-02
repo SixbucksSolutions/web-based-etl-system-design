@@ -110,12 +110,12 @@
   </g>
   <!-- Failed processing is isolated; replay returns through the normal queue. -->
   <path class="flow" d="M 305 675 H 240"/>
-  <text x="272.5" y="663" style="font-size: 12px;">Failed</text>
-  <path class="flow replay" d="M 140 630 V 600 H 340 V 570"/>
+  <text x="272.5" y="695" style="font-size: 12px;">Failed</text>
+  <path class="flow replay" d="M 240 630 L 305 570"/>
   <text x="225" y="590" style="font-size: 13px;">Controlled replay</text>
-  <g aria-label="Failed Messages / Quarantine, dead-letter queue">
+  <g aria-label="Failed Ingest Messages / Quarantine, dead-letter queue">
     <rect class="node" x="40" y="630" width="200" height="90"/>
-    <text x="140" y="655" style="font-size: 18px; font-weight: 600;">Failed Messages</text>
+    <text x="140" y="655" style="font-size: 16px; font-weight: 600;">Failed Ingest Messages</text>
     <text x="140" y="681" style="font-size: 18px; font-weight: 600;">Quarantine (DLQ)</text>
     <text x="140" y="705" style="font-size: 14px;">Inspect / fix / replay</text>
   </g>
