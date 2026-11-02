@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1615" viewBox="0 0 1290 1615" role="img" aria-labelledby="diagram-title diagram-description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1925" viewBox="0 0 1290 1925" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Four short, double-ended dotted corner arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Customers resolve foobar.com through a Managed DNS Service on a lookaside query-and-response branch. HTTPS requests go directly to the CDN, which serves the landing page and assets and fetches or revalidates content from the foobar.com origin server. DNS does not proxy the web request. The database receives ingested observations from the DB writer. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Four short dotted corner arrows point into it, representing logs from every component going to one shared destination. Logging, Metrics Store, and Managed Secrets Store share the upper Management Plane row, with Service Health Management, Monitoring, and Alerting below them. Metrics from every component reach the shared Metrics Store, shown with four inward dotted corner arrows. The Monitoring Platform connects bidirectionally to the Metrics Store, Service Ops Team Alerting System, and Service Health Management. Service Health Management right-sizes workloads and replaces unhealthy instances; dotted corner arrows represent workload control and status. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
+  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store holds credentials and connection configuration in the lower Management Plane. Four short, double-ended dotted corner arrows represent credential requests and responses from components that need secrets. Both fleets perform extraction and feed a shared message queue, such as SQS or RabbitMQ. The database writer validates, transforms, and loads observations. Failed messages go to a quarantine or dead-letter queue for investigation and controlled replay. Customers resolve foobar.com and api.foobar.com through a Managed DNS Service on a lookaside query-and-response branch. HTTPS requests go directly to the CDN, which serves the landing page and assets and fetches or revalidates content from the foobar.com origin server. The browser application sends separate HTTPS API requests to an API Load Balancer, which routes them to API Server 1 through N. Authentication remains in the API application. DNS does not proxy web requests. The database receives ingested observations from the DB writer. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits below the database in the Management Plane. Four short dotted corner arrows point into it, representing logs from every component going to one shared destination. Logging, Metrics Store, and Managed Secrets Store share the upper Management Plane row, with Service Health Management, Monitoring, and Alerting below them. Metrics from every component reach the shared Metrics Store, shown with four inward dotted corner arrows. The Monitoring Platform connects bidirectionally to the Metrics Store, Service Ops Team Alerting System, and Service Health Management. Service Health Management right-sizes workloads and replaces unhealthy instances; dotted corner arrows represent workload control and status. Below the service boundary, the Service Ops Team receives one-way alerts and interacts bidirectionally with Monitoring. Lighter inner boundaries separate the Data Plane (ingestion and serving, including quarantine and the database) from the Management Plane (shared operational services). These are logical responsibility groups, not independent infrastructure or failure domains. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -23,7 +23,7 @@
     .secrets-flow, .control-flow { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; marker-start: url(#log-arrow); marker-end: url(#log-arrow); }
     .log-flow, .metric-flow { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 1 4; stroke-linecap: round; marker-end: url(#log-arrow); }
   </style>
-  <rect width="1290" height="1615" fill="#ffffff"/>
+  <rect width="1290" height="1925" fill="#ffffff"/>
 
   <!-- Source boxes have 30px clearance below the label and to the group sides/bottom. -->
   <g aria-label="External Data Sources">
@@ -60,18 +60,18 @@
 
   <!-- Preserve the gap below the transfer label and add matching space above it. -->
   <g transform="translate(0, 50)">
-  <rect x="5" y="250" width="1280" height="1140" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
-  <text x="40" y="1378" style="text-anchor: start; font-size: 18px; font-weight: 600;">Web service: our sphere of control</text>
+  <rect x="5" y="250" width="1280" height="1450" rx="8" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+  <text x="40" y="1688" style="text-anchor: start; font-size: 18px; font-weight: 600;">Web service: our sphere of control</text>
 
   <g aria-label="Data Plane: ingestion and serving">
-    <rect class="plane" x="35" y="280" width="1220" height="597" rx="8"/>
-    <!-- DB bottom is 782 + 30 from its content transform; label top is 842: 30px gap. -->
-    <text class="plane-label" x="645" y="842" dominant-baseline="text-before-edge">Data Plane — ingestion and serving</text>
+    <rect class="plane" x="35" y="280" width="1220" height="907" rx="8"/>
+    <!-- Lowest API row ends at 1092 + 30 from its content transform; label top is 1152: 30px gap. -->
+    <text class="plane-label" x="645" y="1152" dominant-baseline="text-before-edge">Data Plane — ingestion and serving</text>
   </g>
   <g aria-label="Management Plane: shared operational services">
-    <rect class="plane" x="35" y="907" width="1220" height="423" rx="8"/>
-    <!-- Health-arrow lower endpoints are at 1250 - 13 + 30 = 1267; label top is 30px below. -->
-    <text class="plane-label" x="45" y="1297" dominant-baseline="text-before-edge" style="text-anchor: start;">Management Plane — shared operational services</text>
+    <rect class="plane" x="35" y="1217" width="1220" height="423" rx="8"/>
+    <!-- Health-arrow lower endpoints are at 1250 + 297 + 30 = 1577; label top is 30px below. -->
+    <text class="plane-label" x="45" y="1607" dominant-baseline="text-before-edge" style="text-anchor: start;">Management Plane — shared operational services</text>
   </g>
 
   <path class="flow both" d="M 333.75 90 V 310"/>
@@ -80,12 +80,14 @@
     <text class="detail" x="533.75" y="180">HTTPS Connections</text>
     <text class="detail" x="533.75" y="207">REST polling, WebSocket push, etc.</text>
   </g>
-  <!-- DNS is a lookaside lookup; HTTPS goes directly from the customer to the CDN. -->
+  <!-- DNS is a lookaside lookup; the browser calls the CDN and API endpoint separately. -->
   <path class="flow both" d="M 1065 110 V 310"/>
   <path class="flow both" d="M 1065 155 H 1225 V 740 H 1185"/>
   <text x="1145" y="145" style="font-size: 13px;">DNS lookup</text>
   <rect x="1027" y="184" width="76" height="26" fill="#ffffff"/>
   <text x="1065" y="203" style="font-size: 14px;">HTTPS</text>
+  <path class="flow both" d="M 1065 185 H 900 V 842 H 955 V 872"/>
+  <text x="982.5" y="175" style="font-size: 13px;">App API HTTPS</text>
 
   <!-- Match 30px outer-to-plane and plane-to-reader padding. -->
   <g transform="translate(0, 30)">
@@ -127,11 +129,11 @@
     <text class="title" x="533.75" y="497">Message Queue</text>
     <text class="small" x="533.75" y="522">(e.g., SQS, RabbitMQ)</text>
   </g>
-  <g aria-label="Managed DNS Service for foobar.com, lookaside lookup">
+  <g aria-label="Managed DNS Service for foobar.com and api.foobar.com, lookaside lookup">
     <rect class="node" x="945" y="665" width="240" height="90"/>
     <text class="title" x="1065" y="690">Managed DNS</text>
     <text class="title" x="1065" y="716">Service</text>
-    <text class="small" x="1065" y="742">foobar.com</text>
+    <text x="1065" y="742" style="font-size: 12px;">foobar.com + api.foobar.com</text>
   </g>
   <g aria-label="Origin Server for foobar.com">
     <rect class="node" x="945" y="440" width="240" height="100"/>
@@ -172,7 +174,26 @@
     <text x="797.5" y="755" style="font-size: 14px;">TimescaleDB)</text>
   </g>
 
-  <g transform="translate(255, 307)">
+  <!-- Application API calls are separate from static landing-page delivery. -->
+  <g aria-label="API Load Balancer for api.foobar.com">
+    <rect class="node" x="835" y="842" width="240" height="90"/>
+    <text class="title" x="955" y="876">API Load Balancer</text>
+    <text class="detail" x="955" y="905">api.foobar.com</text>
+  </g>
+  <path class="flow both" d="M 915 932 V 962 H 805 V 992"/>
+  <path class="flow both" d="M 995 932 V 962 H 1105 V 992"/>
+  <g aria-label="API Server 1">
+    <rect class="node" x="685" y="992" width="240" height="100"/>
+    <text class="title" x="805" y="1030">API Server 1</text>
+    <text x="805" y="1060" style="font-size: 14px;">Auth + application requests</text>
+  </g>
+  <g aria-label="API Server N">
+    <rect class="node" x="985" y="992" width="240" height="100"/>
+    <text class="title" x="1105" y="1030">API Server <tspan font-style="italic">N</tspan></text>
+    <text x="1105" y="1060" style="font-size: 14px;">Auth + application requests</text>
+  </g>
+
+  <g transform="translate(255, 617)">
   <!-- Short double-ended arrows symbolize credential requests and responses. -->
   <g aria-label="Components request and receive credentials from the Managed Secrets Store">
     <path class="secrets-flow" d="M 670 610 L 690 630"/>
@@ -189,7 +210,7 @@
 
   </g>
 
-  <g transform="translate(-552.5, 307)">
+  <g transform="translate(-552.5, 617)">
   <!-- Short inward arrows symbolize every component using one logical log destination. -->
   <g aria-label="Every component sends logs to the Resilient Logging Subsystem">
     <path class="log-flow" d="M 637.5 610 L 657.5 630"/>
@@ -207,7 +228,7 @@
 
   </g>
 
-  <g transform="translate(348.75, -203)">
+  <g transform="translate(348.75, 107)">
   <g aria-label="Metrics from every component reach the shared Metrics Store">
     <path class="metric-flow" d="M 45 1120 L 65 1140"/>
     <path class="metric-flow" d="M 325 1120 L 305 1140"/>
@@ -220,9 +241,9 @@
     <text class="title" x="185" y="1205">Store</text>
   </g>
   </g>
-  <path class="flow both" d="M 533.75 1027 V 1127"/>
+  <path class="flow both" d="M 533.75 1337 V 1437"/>
 
-  <g transform="translate(0, -13)">
+  <g transform="translate(0, 297)">
   <!-- Shared operational roles may be supplied by the hosting platform. -->
   <g aria-label="Service Health Management: workload control and status">
     <path class="control-flow" d="M 85 1120 L 105 1140"/>
@@ -252,14 +273,14 @@
 
   </g>
 
-  <!-- Ops top is 1390 + 30 from the content transform: 30px below the outer border at 1390. -->
+  <!-- Ops top is 1700 + 30 from the content transform: 30px below the outer border at 1700. -->
   <!-- Operators are outside the running service; alert delivery is one-way. -->
-  <path class="flow both" d="M 533.75 1217 V 1390"/>
-  <path class="flow" d="M 1065 1217 V 1435 H 653.75"/>
+  <path class="flow both" d="M 533.75 1527 V 1700"/>
+  <path class="flow" d="M 1065 1527 V 1745 H 653.75"/>
   <g aria-label="Service Ops Team">
-    <rect class="node" x="413.75" y="1390" width="240" height="90"/>
-    <text class="title" x="533.75" y="1425">Service Ops</text>
-    <text class="title" x="533.75" y="1455">Team</text>
+    <rect class="node" x="413.75" y="1700" width="240" height="90"/>
+    <text class="title" x="533.75" y="1735">Service Ops</text>
+    <text class="title" x="533.75" y="1765">Team</text>
   </g>
   </g>
   </g>
