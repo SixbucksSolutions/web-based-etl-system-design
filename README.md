@@ -200,6 +200,8 @@ The initial single-instance setup shares one endpoint until replicas are added. 
 
 **Backups and tested restores are table stakes with paying customers.** DigitalOcean provides [daily backups and point-in-time recovery](https://docs.digitalocean.com/products/databases/postgresql/details/features/) over a seven-day window. Define acceptable data loss and recovery time, then regularly [restore to a separate cluster](https://docs.digitalocean.com/products/databases/postgresql/how-to/restore-from-backups/), verify TimescaleDB data and representative queries, and rehearse application cutover. Standbys improve availability; backups recover from unwanted changes that replicas also copy. Plan retention to meet business needs: deleting a DigitalOcean cluster also deletes its managed backups.
 
+**Losing the production database is a major service incident.** A healthy failover standby can turn a primary-node failure into a failover instead of a backup restore; backups still cover unwanted changes that replication also copies. **Your backup and recovery policy sets how much recent user activity you're willing to risk losing—you do you.** Judge that by the latest point you can actually restore, including transaction-log/point-in-time recovery, not just the last full backup. Restoring an earlier point does not bring back queue messages already deleted after commit. Recheck coverage and backfill source observations; newer registrations or user settings may require account recovery or re-entry. Ordinary application logs can support investigation, but are not a guaranteed replayable backup.
+
 #### 4.2.5 Monitoring/Alerting
 
 **Discovery and credentials:** Watch secret retrieval, DNS resolution, connection, TLS verification, and login failures. Distinguish a failed lookup or credential rotation from an unhealthy database, and alert when clients cannot establish usable connections.
@@ -283,3 +285,5 @@ Watch healthy versus expected API instances, request latency, error rates, and a
 ## License
 
 [MIT](LICENSE) — use, adapt, and share this guide.
+
+Use this guide at your own risk. You are responsible for your production decisions, backups, and recovery tests. The guide is provided **as is**, under the warranty and liability terms of the [MIT License](LICENSE).
