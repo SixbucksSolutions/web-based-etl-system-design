@@ -71,6 +71,8 @@ Message queuing is a well-solved problem. **Prefer a managed queue service over 
 
 #### 4.1.4 Resilient DB Writer
 
+Each DB writer retrieves the database connection details—host/IP, port, database name, and login credentials—from the [Managed Secrets Store](#411-managed-secrets-store). Keep these out of the writer's code and logs, and use the same refresh policy for connection settings and credential rotations.
+
 The goal is for every queued copy to be processed successfully, even when another writer has already stored the same observation. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging or deleting the queue message. Other database errors still need normal handling. The [database section](#42-database) owns the observation key and its constraints.
 
 #### 4.1.5 Monitoring/Alerting
