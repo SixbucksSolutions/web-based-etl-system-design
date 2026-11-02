@@ -10,10 +10,10 @@
     </marker>
   </defs>
   <style>
-    text { font-family: Arial, Helvetica, sans-serif; fill: #252334; text-anchor: middle; }
+    text { font-family: Arial, Helvetica, sans-serif; fill: #1e293b; text-anchor: middle; }
     .plane { fill: none; stroke: #a8b3c2; stroke-width: 1.5; stroke-dasharray: 2 5; stroke-linecap: round; }
     .plane-label { font-size: 18px; font-weight: 600; fill: #58677b; }
-    .node { fill: #f0edff; stroke: #927acc; stroke-width: 2; }
+    .node { fill: #eaf4ff; stroke: #4b8bc4; stroke-width: 2; }
     .title { font-size: 22px; font-weight: 600; }
     .detail { font-size: 18px; }
     .small { font-size: 16px; }
@@ -46,7 +46,7 @@
   </g>
   <g aria-label="Customers: multiple people with paid monthly access">
     <!-- Original geometric group-of-people icon; no external icon asset. -->
-    <g transform="translate(1065, 55)" fill="#ffffff" stroke="#927acc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="translate(1065, 55)" fill="#ffffff" stroke="#4b8bc4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <circle cx="-30" cy="0" r="8"/>
       <path d="M -45 28 V 17 C -45 3 -15 3 -15 17 V 28 Z"/>
       <circle cx="30" cy="0" r="8"/>
