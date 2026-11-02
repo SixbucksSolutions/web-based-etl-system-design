@@ -60,6 +60,11 @@ The aim is to design a system that can survive failures without customers ever n
 
 #### 4.1.3 Resilient Message Queue
 
+The queue gives us two key advantages:
+
+- **Loose coupling:** Readers publish messages; DB writers consume them. That simple transfer contract lets either component be changed or replaced independently, provided the message format and delivery expectations stay compatible.
+- **Backpressure:** When the database is heavily loaded, writers can slow consumption and keep in-flight work bounded. The [queue absorbs the backlog](https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling) while readers keep collecting and publishing; readers do not need to handle database write timeouts. This buffer has limits: monitor queue capacity and message age so a prolonged slowdown does not exhaust storage or exceed the freshness budget.
+
 Message queuing is a well-solved problem. **Prefer a managed queue service over self-hosting — RECOMMENDED**, so the provider handles more of the infrastructure, maintenance, and availability work. [Amazon SQS](https://aws.amazon.com/sqs/) and hosted RabbitMQ are examples; choose a service that fits your environment and delivery requirements. The aim is for every reader's copy to reach a DB writer, with redundant copies protecting an observation if one is lost before queue acceptance. Check successful enqueueing, retry uncertain sends, and expect duplicate deliveries. Writers acknowledge or delete messages only after database commit.
 
 [RabbitMQ](https://www.rabbitmq.com/docs/download) with [quorum queues](https://www.rabbitmq.com/docs/quorum-queues) remains our concrete example, rather than a required product. If self-hosting, use a [three-node cluster](https://www.rabbitmq.com/docs/clustering) across separate hosts and, where possible, three failure domains, with three replicas per queue and persistent storage. Check routing and require [publisher confirms](https://www.rabbitmq.com/docs/confirms); quorum queues confirm after majority replication. Test failover with whichever service you choose. Consider [Kafka](https://kafka.apache.org/intro/) when retained event history and independent replay become requirements.
