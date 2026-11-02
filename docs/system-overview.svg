@@ -43,8 +43,8 @@
 
   <path class="flow both" d="M 160 140 V 300"/>
   <path class="flow both" d="M 690 140 V 300"/>
-  <g aria-label="HTTPS or secure WebSocket transfer: REST polling, WebSocket push, etc.">
-    <text class="detail" x="425" y="180">HTTPS / secure WebSockets</text>
+  <g aria-label="HTTPS Connections: REST polling, WebSocket push, etc." font-style="italic">
+    <text class="detail" x="425" y="180">HTTPS Connections</text>
     <text class="detail" x="425" y="207">REST polling, WebSocket push, etc.</text>
   </g>
   <path class="flow" d="M 1130 140 V 300"/>
