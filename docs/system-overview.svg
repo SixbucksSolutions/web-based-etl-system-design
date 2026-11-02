@@ -44,7 +44,7 @@
     <text class="title" x="733.75" y="80">External Data</text>
     <text class="title" x="733.75" y="110">Source <tspan font-style="italic">N</tspan></text>
   </g>
-  <g aria-label="Customers: multiple people with paid monthly access">
+  <g aria-label="Customers: multiple people">
     <!-- Original geometric group-of-people icon; no external icon asset. -->
     <g transform="translate(1065, 55)" fill="#ffffff" stroke="#4b8bc4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <circle cx="-30" cy="0" r="8"/>
@@ -55,7 +55,6 @@
       <path d="M -22 34 V 18 C -22 0 22 0 22 18 V 34 Z"/>
     </g>
     <text class="title" x="1065" y="20">Customers</text>
-    <text class="detail" x="1065" y="116">Paid monthly access</text>
   </g>
 
   <!-- Preserve the gap below the transfer label and add matching space above it. -->
@@ -83,11 +82,7 @@
   <!-- DNS is a lookaside lookup; the browser calls the CDN and API endpoint separately. -->
   <path class="flow both" d="M 1065 100 V 470"/>
   <path class="flow both" d="M 1110 27.5 H 1155 V 310"/>
-  <text x="1195" y="135" style="font-size: 13px;">DNS lookup</text>
-  <rect x="1027" y="184" width="76" height="26" fill="#ffffff"/>
-  <text x="1065" y="203" style="font-size: 14px;">HTTPS</text>
   <path class="flow both" d="M 1020 27.5 H 900 V 842 H 955 V 872"/>
-  <text x="960" y="17.5" style="font-size: 13px;">App API HTTPS</text>
 
   <!-- Match 30px outer-to-plane and plane-to-reader padding. -->
   <g transform="translate(0, 30)">
