@@ -33,14 +33,14 @@
     <text class="detail" x="1055" y="176">Credentials &amp; connection config</text>
   </g>
   <text class="detail" x="645" y="245">Managed does not imply multi-AZ: verify each service’s failure coverage.</text>
-  <rect class="band" x="45" y="700" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="790" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="880" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="970" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="1060" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="1150" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="1240" width="890" height="60" rx="5"/>
-  <rect class="band" x="45" y="1330" width="890" height="60" rx="5"/>
+  <rect class="band" x="45" y="700" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="790" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="880" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="970" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="1060" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="1150" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="1240" width="905" height="60" rx="5"/>
+  <rect class="band" x="45" y="1330" width="905" height="60" rx="5"/>
   <g aria-label="Failure Domain or Availability Zone 1, Compute Instance 1">
     <rect class="boundary" x="345" y="290" width="280" height="1190" rx="8"/>
     <text class="label" x="485" y="325">Failure Domain / AZ 1</text>
