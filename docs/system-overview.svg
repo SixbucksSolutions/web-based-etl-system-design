@@ -45,9 +45,9 @@
     <text class="title" x="730" y="110">Source <tspan font-style="italic">N</tspan></text>
   </g>
   <g aria-label="Subscribers">
-    <rect class="node" x="985" y="40" width="240" height="100"/>
-    <text class="title" x="1105" y="80">Subscribers</text>
-    <text class="detail" x="1105" y="112">Paid monthly access</text>
+    <rect class="node" x="945" y="40" width="240" height="100"/>
+    <text class="title" x="1065" y="80">Subscribers</text>
+    <text class="detail" x="1065" y="112">Paid monthly access</text>
   </g>
 
   <!-- Preserve the gap below the transfer label and add matching space above it. -->
@@ -70,7 +70,7 @@
     <text class="detail" x="530" y="180">HTTPS Connections</text>
     <text class="detail" x="530" y="207">REST polling, WebSocket push, etc.</text>
   </g>
-  <path class="flow" d="M 1105 90 V 310"/>
+  <path class="flow" d="M 1065 90 V 310"/>
 
   <!-- Match 30px outer-to-plane and plane-to-reader padding. -->
   <g transform="translate(0, 30)">
@@ -93,14 +93,14 @@
   </g>
 
   <g aria-label="Web queries">
-    <rect class="node" x="985" y="280" width="240" height="100"/>
-    <text class="title" x="1105" y="320">Web queries</text>
-    <text class="detail" x="1105" y="350">Subscriber requests</text>
+    <rect class="node" x="945" y="280" width="240" height="100"/>
+    <text class="title" x="1065" y="320">Web queries</text>
+    <text class="detail" x="1065" y="350">Subscriber requests</text>
   </g>
 
   <path class="flow" d="M 330 380 V 520 H 410"/>
   <path class="flow" d="M 730 380 V 520 H 650"/>
-  <path class="flow" d="M 1105 380 V 470"/>
+  <path class="flow" d="M 1065 380 V 470"/>
   <g aria-label="Resilient message queue">
     <rect class="node" x="410" y="470" width="240" height="100"/>
     <text class="title" x="530" y="500">Resilient</text>
@@ -108,13 +108,13 @@
     <text class="small" x="530" y="552">(e.g., SQS, RabbitMQ)</text>
   </g>
   <g aria-label="Service API">
-    <rect class="node" x="985" y="470" width="240" height="100"/>
-    <text class="title" x="1105" y="510">Service API</text>
-    <text class="detail" x="1105" y="542">Web service entry point</text>
+    <rect class="node" x="945" y="470" width="240" height="100"/>
+    <text class="title" x="1065" y="510">Service API</text>
+    <text class="detail" x="1065" y="542">Web service entry point</text>
   </g>
 
   <path class="flow" d="M 530 570 V 630"/>
-  <path class="flow" d="M 1105 570 V 630"/>
+  <path class="flow" d="M 1065 570 V 630"/>
   <g aria-label="Resilient database writer">
     <rect class="node" x="410" y="630" width="240" height="90"/>
     <text class="title" x="530" y="654">Resilient</text>
@@ -133,21 +133,21 @@
     <text x="225" y="705" style="font-size: 14px;">Inspect / fix / replay</text>
   </g>
   <g aria-label="Middleware">
-    <rect class="node" x="985" y="630" width="240" height="90"/>
-    <text class="title" x="1105" y="665">Middleware</text>
-    <text class="detail" x="1105" y="695">Request processing</text>
+    <rect class="node" x="945" y="630" width="240" height="90"/>
+    <text class="title" x="1065" y="665">Middleware</text>
+    <text class="detail" x="1065" y="695">Request processing</text>
   </g>
 
-  <!-- Database x=817.5 is midway between writer x=530 and middleware x=1105. -->
-  <path class="flow" d="M 650 675 H 742.5"/>
-  <path class="flow" d="M 985 675 H 892.5"/>
+  <!-- Database x=797.5 is midway between writer x=530 and middleware x=1065. -->
+  <path class="flow" d="M 650 675 H 722.5"/>
+  <path class="flow" d="M 945 675 H 872.5"/>
   <g aria-label="Service database, PostgreSQL and TimescaleDB">
-    <path class="node" d="M 742.5 580 V 770 C 742.5 790 892.5 790 892.5 770 V 580 Z"/>
-    <ellipse class="node" cx="817.5" cy="580" rx="75" ry="15"/>
-    <text class="title" x="817.5" y="635">Service</text>
-    <text class="title" x="817.5" y="665">Database</text>
-    <text x="817.5" y="699" style="font-size: 14px;">(PostgreSQL +</text>
-    <text x="817.5" y="720" style="font-size: 14px;">TimescaleDB)</text>
+    <path class="node" d="M 722.5 580 V 770 C 722.5 790 872.5 790 872.5 770 V 580 Z"/>
+    <ellipse class="node" cx="797.5" cy="580" rx="75" ry="15"/>
+    <text class="title" x="797.5" y="635">Service</text>
+    <text class="title" x="797.5" y="665">Database</text>
+    <text x="797.5" y="699" style="font-size: 14px;">(PostgreSQL +</text>
+    <text x="797.5" y="720" style="font-size: 14px;">TimescaleDB)</text>
   </g>
 
   <g transform="translate(255, 290)">
