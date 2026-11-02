@@ -15,10 +15,11 @@ A practical guide to turning external API data into a service people pay a month
     - [4.1.4 Resilient DB Writer](#414-resilient-db-writer)
     - [4.1.5 Monitoring/Alerting](#415-monitoringalerting)
   - [4.2 Database](#42-database)
-    - [4.2.1 Primary DB and Failover Standby](#421-primary-db-and-failover-standby)
-    - [4.2.2 Read Replicas](#422-read-replicas)
-    - [4.2.3 Backup and Restore](#423-backup-and-restore)
-    - [4.2.4 Monitoring/Alerting](#424-monitoringalerting)
+    - [4.2.1 Service Discovery and Credentials](#421-service-discovery-and-credentials)
+    - [4.2.2 Primary DB and Failover Standby](#422-primary-db-and-failover-standby)
+    - [4.2.3 Read Replicas](#423-read-replicas)
+    - [4.2.4 Backup and Restore](#424-backup-and-restore)
+    - [4.2.5 Monitoring/Alerting](#425-monitoringalerting)
   - [4.3 Resilient Logging Subsystem](#43-resilient-logging-subsystem)
     - [4.3.1 Monitoring/Alerting](#431-monitoringalerting)
 - [License](#license)
@@ -71,7 +72,7 @@ Message queuing is a well-solved problem. **Prefer a managed queue service over 
 
 #### 4.1.4 Resilient DB Writer
 
-Each DB writer retrieves the database connection details—host/IP, port, database name, and login credentials—from the [Managed Secrets Store](#411-managed-secrets-store). Keep these out of the writer's code and logs, and use the same refresh policy for connection settings and credential rotations.
+Each DB writer retrieves the database connection details—hostname, port, database name, and login credentials—from the [Managed Secrets Store](#411-managed-secrets-store). Keep these out of the writer's code and logs, and follow the database's [service discovery and credential refresh guidance](#421-service-discovery-and-credentials).
 
 The goal is for every queued copy to be processed successfully, even when another writer has already stored the same observation. **Database uniqueness constraints are required** on a stable source-observation key, so the first committed copy wins. Use an atomic [`INSERT … ON CONFLICT … DO NOTHING`](https://www.postgresql.org/docs/current/sql-insert.html) targeted at that key; an expected duplicate is a successful no-op, not a reason to crash or page the owner. Commit the database transaction before acknowledging or deleting the queue message. Other database errors still need normal handling. The [database section](#42-database) owns the observation key and its constraints.
 
@@ -91,19 +92,25 @@ The database supports both ingestion and subscriber queries. Our example uses [D
 
 Define the stable source-observation key and enforce first-committed-copy-wins here, so independent writers share the same storage contract. For [TimescaleDB hypertables](https://www.tigerdata.com/docs/build/performance-optimization/hypertables-and-unique-indexes), unique keys must include every partitioning column, including time; use a source timestamp that stays the same across repeated deliveries of that observation.
 
-#### 4.2.1 Primary DB and Failover Standby
+#### 4.2.1 Service Discovery and Credentials
+
+DB writers and the service API retrieve the database hostname, port, database name, and their login credentials from the [Managed Secrets Store](#411-managed-secrets-store). Use the provider's stable DNS hostname instead of pinning an IP address, so clients can follow [managed failover](https://docs.digitalocean.com/products/databases/postgresql/concepts/advanced-edition/). Give writers and query clients separate accounts with only the permissions they need, and use the provider's [TLS verification settings](https://docs.digitalocean.com/products/databases/postgresql/how-to/connect/). Define how clients refresh settings and replace pooled connections after credential changes; fetching a new secret does not update an existing connection. Clients must also reconnect after interrupted connections during failover.
+
+#### 4.2.2 Primary DB and Failover Standby
 
 **Start with a single Standard instance — RECOMMENDED.** Let ingestion and subscriber queries share it while measured performance meets their targets, with managed backups and tested restores. When the acceptable recovery window calls for it, plan a [failover standby](https://docs.digitalocean.com/products/databases/postgresql/how-to/add-standby-nodes/) ready to take over after primary failure; availability needs can justify this even at low load. Add one to an eligible existing cluster or plan a migration to a compatible HA offering. DigitalOcean describes eligible Standard deployments as offering [failover in minutes](https://docs.digitalocean.com/products/databases/postgresql/how-to/create/); test how long application reads and writes actually take to recover. A standby supplies failover capacity, while a dedicated read replica supplies query capacity.
 
-#### 4.2.2 Read Replicas
+#### 4.2.3 Read Replicas
 
 On a plan that supports it, add a [read replica](https://docs.digitalocean.com/products/databases/postgresql/how-to/add-read-only-nodes/) when sustained query latency shows subscriber reads competing with ingestion for CPU or I/O, after checking queries, indexes, and connection pooling. This gives subscriber queries their own capacity. If writes are the bottleneck, optimize them or resize the primary; a replica must still replay those writes. Include replication lag in the subscriber freshness budget, and define how the API behaves when replicas are unavailable or too stale.
 
-#### 4.2.3 Backup and Restore
+#### 4.2.4 Backup and Restore
 
 **Backups and tested restores are table stakes with paying customers.** DigitalOcean provides [daily backups and point-in-time recovery](https://docs.digitalocean.com/products/databases/postgresql/details/features/) over a seven-day window. Define acceptable data loss and recovery time, then regularly [restore to a separate cluster](https://docs.digitalocean.com/products/databases/postgresql/how-to/restore-from-backups/), verify TimescaleDB data and representative queries, and rehearse application cutover. Standbys improve availability; backups recover from unwanted changes that replicas also copy. Plan retention to meet business needs: deleting a DigitalOcean cluster also deletes its managed backups.
 
-#### 4.2.4 Monitoring/Alerting
+#### 4.2.5 Monitoring/Alerting
+
+**Discovery and credentials:** Watch secret retrieval, DNS resolution, connection, TLS verification, and login failures. Distinguish a failed lookup or credential rotation from an unhealthy database, and alert when clients cannot establish usable connections.
 
 **Primary and standby:** Combine [DigitalOcean's database metrics](https://docs.digitalocean.com/products/databases/postgresql/how-to/monitor-databases/) with application timings. Watch p95 subscriber-query and write-commit latency, sustained CPU or disk-I/O saturation, memory pressure, connection-pool waits, lock waits, failed transactions, storage headroom, and queue age. Correlate query slowdowns with ingestion activity, and alert on sustained trends approaching latency or freshness limits. Track standby readiness and measured application recovery time after failover; use an independent database-access check alongside provider health signals.
 
