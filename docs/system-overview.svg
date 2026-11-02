@@ -56,11 +56,11 @@
   <text x="40" y="1338" style="text-anchor: start; font-size: 18px; font-weight: 600;">Web service: our sphere of control</text>
 
   <g aria-label="Data Plane: ingestion and serving">
-    <rect class="plane" x="25" y="280" width="1240" height="580" rx="8"/>
+    <rect class="plane" x="35" y="280" width="1220" height="580" rx="8"/>
     <text class="plane-label" x="645" y="848">Data Plane — ingestion and serving</text>
   </g>
   <g aria-label="Management Plane: shared operational services">
-    <rect class="plane" x="25" y="890" width="1240" height="400" rx="8"/>
+    <rect class="plane" x="35" y="890" width="1220" height="400" rx="8"/>
     <text class="plane-label" x="45" y="1278" style="text-anchor: start;">Management Plane — shared operational services</text>
   </g>
 
