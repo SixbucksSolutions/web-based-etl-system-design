@@ -169,10 +169,10 @@
 
   <!-- Application API calls are separate from static landing-page delivery. -->
   <path class="flow both" d="M 653.75 842 L 722.5 767"/>
-  <text x="707.141" y="825" style="font-size: 12px;">
-    <tspan x="707.141">Reads</tspan>
-    <tspan x="707.141" dy="14">+</tspan>
-    <tspan x="707.141" dy="14">Writes</tspan>
+  <text x="656.090" y="778.203" style="font-size: 12px;">
+    <tspan x="656.090">Reads</tspan>
+    <tspan x="656.090" dy="14">+</tspan>
+    <tspan x="656.090" dy="14">Writes</tspan>
   </text>
   <g aria-label="API Load Balancer for api.foobar.com">
     <rect class="node" x="945" y="842" width="240" height="90"/>
