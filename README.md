@@ -37,7 +37,8 @@ A practical guide to turning external API data into a service people pay a month
   - [4.7 Customer API](#47-customer-api)
     - [4.7.1 API Load Balancer](#471-api-load-balancer)
     - [4.7.2 API Service](#472-api-service)
-    - [4.7.3 Monitoring/Alerting](#473-monitoringalerting)
+    - [4.7.3 In-memory Cache](#473-in-memory-cache)
+    - [4.7.4 Monitoring/Alerting](#474-monitoringalerting)
 - [License](#license)
 
 ## 1. Overview
@@ -47,11 +48,11 @@ External data sources provide updates through REST polling, WebSocket push, or o
 ### 1.1 High-Level Architecture Diagram
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. Separate browser API requests go through a load balancer to the API Service. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/3638b0781a9b2bed75668e8e90221aaf05660bcd/docs/system-overview.svg)
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. Readers extract data into the queue; the DB writer validates, transforms, and loads it. A failed-message quarantine provides controlled replay. The shared Managed Secrets Store sits in the Management Plane with logging, metrics, monitoring, and alerting. The DB writer stores observations in the service database. Customers use a DNS lookaside lookup, then HTTPS to the CDN; the CDN fetches landing-page content from the origin. Separate browser API requests go through a load balancer to the API Service, which uses an in-memory cache. The Resilient Logging Subsystem sits below the database. Shared metrics, monitoring, alerting, and service health management support operations, with the Service Ops Team outside the boundary.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/ad5919036c47e3be037a62a7102e9cdbf8f71926/docs/system-overview.svg)
 
 The outer dotted box marks our sphere of control; data providers, customers, and the Service Ops Team are outside it. The lighter inner boxes group the **Data Plane — ingestion and serving** and **Management Plane — shared operational services**. These are logical responsibility groups, not guarantees of separate infrastructure or independent failure. The upper management row contains shared logging, metrics, and secrets; the lower row contains service health management, monitoring, and alerting for operators. These services support the data plane.
 
-Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The browser application calls `api.foobar.com` separately through an API load balancer to the API Service. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
+Readers perform extraction; the DB writer validates, transforms, and loads observations. Quarantine retains failed ingest messages for investigation and controlled replay through the queue. Short dotted corner arrows show shared-service interactions: logs and metrics flow inward, while secrets and connection profiles use requests and responses. Service Health Management exchanges control and status with workloads. Customers resolve `foobar.com` through Managed DNS, then send HTTPS requests directly to the CDN. The browser application calls `api.foobar.com` separately through an API load balancer to the API Service. The API Service also uses an in-memory cache for frequently requested results. The CDN serves the landing page and assets from cache or fetches/revalidates them against the origin; DNS is a lookaside service, not a web-traffic proxy.
 
 ### 1.2 Service Deployment Diagram
 
@@ -89,6 +90,7 @@ Managed services above the AZ boxes are shared dependencies, **not a promise of 
 | Managed DNS | [Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html). |
 | CDN | [Amazon CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html). |
 | Static origin | [Amazon S3](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html) can hold the static assets behind CloudFront. |
+| In-memory cache | [Amazon ElastiCache](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html) offers managed Valkey and memcached; check connectivity and the chosen availability configuration. |
 | API load balancer | [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html). |
 
 Managed hosting shifts infrastructure work; it does not remove application ownership. Check network reachability, identity, data residency, retention, failure coverage, and transfer costs before combining providers. The API Service remains application-owned in this design.
@@ -257,9 +259,15 @@ After loading the site, the browser application sends HTTPS requests to `api.foo
 
 The API Service can run multiple instances across independent failure domains as availability needs grow. In this design, the API application owns authentication and checks customer identity and subscription entitlements before protected operations. Use established [authentication/session libraries](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), and make session validation work across the fleet: a valid login must not depend on returning to one particular server. Instances retrieve required connection settings and secrets through their scoped profiles.
 
-#### 4.7.3 Monitoring/Alerting
+#### 4.7.3 In-memory Cache
 
-Watch healthy versus expected API instances, request latency, error rates, and authentication failures. Use external checks for both successful authorized access and correctly denied access, and distinguish ordinary invalid logins from authentication-service failures. Alert on lost redundancy, broken login/session behavior, and customer-facing failures before they become widespread.
+Cache frequently requested results to reduce database work and response time. [Memcached](https://memcached.org/) is a focused in-memory key/value cache; [Valkey](https://valkey.io/docs/topics/introduction/) adds richer data structures and replication. Treat cached results as rebuildable: the database remains authoritative. Set expiry and invalidation rules to match the data-freshness budget, and scope keys to the customer or permissions when results differ by access. Authentication and authorization still apply on cache hits. Use bounded cache timeouts and controlled fallback to the database; avoid letting a cold or failed cache trigger an uncontrolled burst of identical queries.
+
+**Prefer a managed cache when it meets your needs — RECOMMENDED.** [DigitalOcean Managed Valkey](https://docs.digitalocean.com/products/databases/valkey/) is an option within the existing provider; self-hosting is not required. Check [plan and availability limits](https://docs.digitalocean.com/products/databases/valkey/details/limits/): standby nodes must be in the same region, and the smallest plan cannot add one. A managed cache still needs the same expiry, fallback, and monitoring decisions.
+
+#### 4.7.4 Monitoring/Alerting
+
+Watch healthy versus expected API instances, request latency, error rates, and authentication failures. Use external checks for both successful authorized access and correctly denied access, and distinguish ordinary invalid logins from authentication-service failures. Alert on lost redundancy, broken login/session behavior, and customer-facing failures before they become widespread. For the cache, watch hit/miss rates, latency, timeouts, memory pressure, evictions, and the age of returned data. Test a cold or unavailable cache and monitor the resulting database load.
 
 ## License
 
