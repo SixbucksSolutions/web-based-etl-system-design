@@ -72,8 +72,8 @@
     <text class="detail" x="1130" y="370">Subscriber requests</text>
   </g>
 
-  <path class="flow" d="M 160 400 V 435 H 385 V 470"/>
-  <path class="flow" d="M 690 400 V 435 H 465 V 470"/>
+  <path class="flow" d="M 160 400 V 520 H 305"/>
+  <path class="flow" d="M 690 400 V 520 H 545"/>
   <path class="flow" d="M 1130 400 V 470"/>
   <g aria-label="Resilient message queue">
     <rect class="node" x="305" y="470" width="240" height="100"/>
