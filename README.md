@@ -19,6 +19,8 @@ A practical guide to turning external API data into a service people pay a month
     - [4.2.2 Read Replicas](#422-read-replicas)
     - [4.2.3 Backup and Restore](#423-backup-and-restore)
     - [4.2.4 Monitoring/Alerting](#424-monitoringalerting)
+  - [4.3 Resilient Logging Subsystem](#43-resilient-logging-subsystem)
+    - [4.3.1 Monitoring/Alerting](#431-monitoringalerting)
 - [License](#license)
 
 ## 1. Quick Problem Description
@@ -26,7 +28,7 @@ A practical guide to turning external API data into a service people pay a month
 External data sources provide updates through REST polling, WebSocket push, or other supported methods. Our service collects them, adds value, and makes the results available to paying subscribers. The ETL pipeline **extracts** (fetches), **transforms** (prepares), and **loads** (stores) the data; subscriber requests use our API to access the results.
 
 <!-- When the diagram changes, update this URL to the commit containing the new SVG to avoid stale cached images. -->
-![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. A shared Managed Secrets Store sits between the fleets, and both fleets feed the message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides. The Resilient Logging Subsystem collects logs from every component.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/96a31ec157f958f74d7b0583448a4011863256bd/docs/system-overview.svg)
+![System overview: external data sources 1 through N each connect to a dedicated resilient reader fleet. A shared Managed Secrets Store sits between the fleets, and both fleets feed the message queue and DB writer. The database is centered between ingestion and subscriber-query columns, with elbow connectors entering its left and right sides. The Resilient Logging Subsystem collects logs from every component.](https://raw.githubusercontent.com/SixbucksSolutions/web-based-etl-system-design/bb3f86594af9c8a608e93a6746530afdc6e2af55/docs/system-overview.svg)
 
 The dotted web service box marks our sphere of control; the providers and subscribers are outside it. A separate dotted box groups the external data sources. Each source connects to its own reader fleet using the transfer methods it supports. The Managed Secrets Store sits between the fleets, with solid, double-ended connections for credential requests and responses. Both fleets feed the shared queue and DB writer, and the ingestion and query paths connect to the database through right-angle side connections. The eight short dotted arrows into the Resilient Logging Subsystem represent logs from every component going to one shared destination. The API and middleware boxes show responsibilities; middleware typically runs before an endpoint handler and may also process its response.
 
@@ -38,7 +40,7 @@ Design [monitoring and alerting](https://sre.google/sre-book/monitoring-distribu
 
 ## 3. Logging
 
-**Every component sends logs to exactly one shared, searchable destination: the Resilient Logging Subsystem.** One logical destination can have redundant collectors and storage; it must not depend on one host. Correlated logs are essential for diagnosing failures across a distributed system. Use [structured fields](https://opentelemetry.io/docs/specs/otel/logs/data-model/): UTC timestamp, component, instance, severity, and an execution ID (for example, a GUID). Carry a shared correlation or trace ID across requests and queue messages, alongside each execution's own ID, so one search follows the work across readers, writers, and API calls. Nobody should have to guess where a component put its logs.
+**Every component sends logs to exactly one shared, searchable destination: the Resilient Logging Subsystem.** **Prefer a managed logging service over self-hosting — RECOMMENDED**, to reduce infrastructure and maintenance work; [section 4.3](#43-resilient-logging-subsystem) gives examples. One logical destination can have redundant collectors and storage; it must not depend on one host. Correlated logs are essential for diagnosing failures across a distributed system. Use [structured fields](https://opentelemetry.io/docs/specs/otel/logs/data-model/): UTC timestamp, component, instance, severity, and an execution ID (for example, a GUID). Carry a shared correlation or trace ID across requests and queue messages, alongside each execution's own ID, so one search follows the work across readers, writers, and API calls. Nobody should have to guess where a component put its logs.
 
 **Everything must log enough, at the right level, to reconstruct what happened.** Record meaningful starts, outcomes, durations, retries, and failures. Use consistent [levels](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging/overview#log-level): **Trace/Debug** for detailed diagnostics, **Information** for normal milestones, **Warning** for recoverable degradation, **Error** for failed operations, and **Critical** when a component cannot function. Filtering by component, execution, and severity should make an incident understandable without drowning it in noise. Expected duplicate writes are normal outcomes, not errors. Keep secrets and sensitive payloads out. Buffer and retry log delivery within limits; monitor dropped logs and missing test events, with independent alerting if the logging subsystem fails.
 
@@ -101,6 +103,14 @@ On a plan that supports it, add a [read replica](https://docs.digitalocean.com/p
 **Read replicas:** Once added, watch replication lag, query latency, and resource headroom on each replica. Verify source-data age and coverage through the subscriber API, so fast queries returning old data are visible. Alert before lag consumes the freshness budget or a replica failure overloads the remaining read capacity.
 
 **Backup and restore:** Track backup failures, the available recovery window, and the date and outcome of the latest restore test. Verify restored data and application access, and compare measured data loss and recovery time with the agreed limits. Alert when required recovery points are missing or restore tests fail.
+
+### 4.3 Resilient Logging Subsystem
+
+[Amazon CloudWatch Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) and [DigitalOcean Managed OpenSearch](https://docs.digitalocean.com/products/databases/opensearch/) are managed options for central log storage and search. DigitalOcean documents [forwarding logs](https://docs.digitalocean.com/products/databases/opensearch/how-to/forward-logs/) from resources such as Droplets and managed databases; application logs still need forwarding configured. Apply the [logging conventions](#3-logging) across every component and send them to your chosen destination. Managed hosting reduces operational work, but you still choose retention, access controls, capacity, and availability settings, and verify that every component's logs arrive.
+
+#### 4.3.1 Monitoring/Alerting
+
+Watch delivery delay, rejected or dropped records, collector backlogs, storage growth, and search availability. Send known test log events from each component and verify they arrive and can be found by correlation ID. Alert on missing events or stalled collection through an independent path that still works when the logging service is unavailable.
 
 ## License
 
