@@ -159,7 +159,7 @@
 
 
   <!-- Ingested observations enter the service database from the writer. -->
-  <path class="flow" d="M 653.75 710 H 722.5"/>
+  <path class="flow both" d="M 653.75 710 H 722.5"/>
   <text x="688.125" y="699" style="font-size: 12px;">writes</text>
   <!-- Front ellipse edge y=630; text ink is approximately y=654..758; body bottom y=782. -->
   <g aria-label="Service database, PostgreSQL and TimescaleDB">
