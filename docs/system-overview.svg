@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1290" height="1085" viewBox="0 0 1290 1085" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">Web service system overview</title>
-  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store sits between the fleets on the same row, with a solid, double-ended connection to each. Both fleets feed a shared message queue, such as SQS or RabbitMQ, and database writer. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem sits between the writer and middleware, centered over the database. Eight short dotted arrows point into it, representing logs from every component going to one shared destination. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
+  <desc id="diagram-description">External Data Source 1 and External Data Source N each connect to their own resilient reader fleet through REST polling, WebSocket push, or other supported transfer methods. The Managed Secrets Store sits between the fleets on the same row, with a solid, double-ended connection to each. Both fleets feed a shared message queue, such as SQS or RabbitMQ, and database writer. Subscribers use the service API and middleware. The database is centered between the writer and middleware columns, with right-angle connectors entering its left and right centers. The Resilient Logging Subsystem, using a service such as CloudWatch or DigitalOcean Managed OpenSearch, sits between the writer and middleware, centered over the database. Eight short dotted arrows point into it, representing logs from every component going to one shared destination. A separate dotted group labeled External Data Sources encloses the two providers outside the dotted web service boundary.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#414855"/>
@@ -127,9 +127,10 @@
   </g>
   <g aria-label="Resilient Logging Subsystem">
     <rect class="node" x="657.5" y="630" width="240" height="90"/>
-    <text class="title" x="777.5" y="655">Resilient</text>
-    <text class="title" x="777.5" y="682">Logging</text>
-    <text class="title" x="777.5" y="709">Subsystem</text>
+    <text class="title" x="777.5" y="650">Resilient Logging</text>
+    <text class="title" x="777.5" y="673">Subsystem</text>
+    <text x="777.5" y="693" style="font-size: 14px;">(e.g., CloudWatch,</text>
+    <text x="777.5" y="710" style="font-size: 14px;">DO Managed OpenSearch)</text>
   </g>
 
   <!-- Database x=777.5 is midway between writer x=425 and middleware x=1130. -->
